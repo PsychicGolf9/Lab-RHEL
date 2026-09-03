@@ -53,3 +53,21 @@ A check is performed to look for an updated kernel using rmp -q kernel. In this 
 Once the server is pushed to production, necessary reboots will be scheduled for times that least impact user experience.
 The above TPM configuration and resultant failure occured here.
 The write-up for my troubleshooting process is found at /docs/troubleshooting/TPM Boot Failure.md.
+
+=== Day 2 ===
+
+User is logged in over SSH
+The hardening process is started by editing /etc/ssh/sshd_config (copy attached in /docs/configs/).
+A public SSH key is copied from Arch host machine to Rocky VM using ssh-copy-id admin@rhel-lab00.
+A new terminal window is opened to test the key-authenticated login and it succeeds.
+/etc/ssh/sshd_config is edited by adding the following to disable root login and password authentication, leaving only ssh key authentication.
+	PermitRootLogin no
+	PasswordAuthentication no
+the key PubkeyAuthentication yes is uncommented to allow using ssh keys.
+systemctl is used to restart sshd.
+
+Ansible is installed along with the community.general collection to begin IaC.
+Wireguard is installed to protect admin level SSH access. See /docs/adr/WireGuard.md for decision making process.
+Wireguard keys are configured on both server (Rocky) and client (Arch).
+System is rebooted to confirm Wireguard interface initializes automatically.
+sshd_config.d/99-listen.conf is added to listen only over Wireguard IP to eliminate internet facing attack surface for admin control (file in /configs).

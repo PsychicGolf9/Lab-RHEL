@@ -1,0 +1,140 @@
+Script started on 2026-09-02 16:44:45-05:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="134" LINES="34"]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo dnf install -y wireguard-tools
+[?2004l[sudo] password for admin: 
+Last metadata expiration check: 2:42:56 ago on Wed 02 Sep 2026 02:02:18 PM CDT.
+Dependencies resolved.
+======================================================================================================================================
+ Package                           Architecture            Version                                   Repository                  Size
+======================================================================================================================================
+Installing:
+ [1m[32mwireguard-tools                  (B[m x86_64                  1.0.20210914-4.el9                        appstream                  113 k
+Installing dependencies:
+ [1m[32msystemd-resolved                 (B[m x86_64                  252-67.el9_8.4.rocky.0.1                  baseos                     358 k
+
+Transaction Summary
+======================================================================================================================================
+Install  2 Packages
+
+Total download size: 471 k
+Installed size: 1.0 M
+Downloading Packages:
+                                                    [===                                            ] ---  B/s |   0  B     --:-- ETA                                                    [===                                            ] ---  B/s |   0  B     --:-- ETA(1/2): systemd-resolved-252-67.el9_8.4.rocky.0.  0% [                                               ] ---  B/s |   0  B     --:-- ETA(1/2): wireguard-tools-1.0.20210914-4.el9.x86_64.rpm                                                  424 kB/s | 113 kB     00:00    
+(2/2): systemd-resolved-252-67.el9_8.4.rocky.0. 51% [========================                       ] 902 kB/s | 241 kB     00:00 ETA(2/2): systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64.rpm                                           1.1 MB/s | 358 kB     00:00    
+--------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                 681 kB/s | 471 kB     00:00     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :  [====================================================                                                     ] 1/1  Preparing        :                                                                                                              1/1 
+  Running scriptlet: systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64                                                             1/2 
+  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [                                                         ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [==                                                       ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [====                                                     ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [======                                                   ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=========                                                ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [===========                                              ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=============                                            ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [===============                                          ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [==================                                       ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [====================                                     ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [======================                                   ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=========================                                ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [===========================                              ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [==============================                           ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [================================                         ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [==================================                       ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=====================================                    ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=======================================                  ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=========================================                ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [===========================================              ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [==============================================           ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [================================================         ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [==================================================       ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [===================================================      ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [====================================================     ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=====================================================    ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [======================================================   ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [=======================================================  ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64 [======================================================== ] 1/2  Installing       : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64                                                             1/2 
+  Running scriptlet: systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64                                                             1/2 
+  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [                                                                ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [======                                                          ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=============                                                   ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [===================                                             ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=======================                                         ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [========================                                        ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=========================                                       ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [==========================                                      ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=================================                               ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [===================================                             ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=====================================                           ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [======================================                          ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=======================================                         ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [========================================                        ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=========================================                       ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [==========================================                      ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [===========================================                     ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [============================================                    ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=============================================                   ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [==============================================                  ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=================================================               ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [==================================================              ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [===================================================             ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [====================================================            ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=====================================================           ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [======================================================          ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=======================================================         ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [========================================================        ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=========================================================       ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [==========================================================      ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [==============================================================  ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64 [=============================================================== ] 2/2  Installing       : wireguard-tools-1.0.20210914-4.el9.x86_64                                                                    2/2 
+  Running scriptlet: wireguard-tools-1.0.20210914-4.el9.x86_64                                                                    2/2 
+  Verifying        : systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64                                                             1/2 
+  Verifying        : wireguard-tools-1.0.20210914-4.el9.x86_64                                                                    2/2 
+
+Installed:
+  systemd-resolved-252-67.el9_8.4.rocky.0.1.x86_64                      wireguard-tools-1.0.20210914-4.el9.x86_64                     
+
+Complete!
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ modprobe wireguard && lsmod | grep wireguard
+[?2004lmodprobe: ERROR: could not insert 'wireguard': Operation not permitted
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo !!
+[?2004lsudo modprobe wireguard && lsmod | grep wireguard
+[01;31m[Kwireguard[m[K             118784  0
+ip6_udp_tunnel         16384  1 [01;31m[Kwireguard[m[K
+udp_tunnel             36864  1 [01;31m[Kwireguard[m[K
+curve25519_x86_64      36864  1 [01;31m[Kwireguard[m[K
+libcurve25519_generic    45056  2 curve25519_x86_64,[01;31m[Kwireguard[m[K
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo mkdir -p /etc/wireguard && sudo umask 077
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ wg genkey | sudo tee /etc/wireguard/server.key | wg pubkey | sudo tee /etc/wireguard/server.pub
+[?2004l[REDACTED]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo chmod 600 /etc/wireguard/server.key
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ wg genkey | sudo tee /etc/wireguard/arch.key | wg pubkey | sudo tee /etc/wireguard/arch.pub
+[?2004l[REDACTED]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo chmod 600 /etc/wireguard/arch.key
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-02 16:52:57-05:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-09-02 17:01:02-05:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="134" LINES="34"]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo cat /etc/wireguard/server.key
+[?2004l[sudo] password for admin: 
+[REDACTED]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo cat /etc/wireguard/server.key[1P.key[1P.key[1P.key[1P.key[1P.key[1P.keya.keyr.keyc.keyh.key[C[C[C[C[K[K[Kpub
+[?2004l[REDACTED]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo tee ?[K/etc/wireguard/wg0.conf >>[K[K<< EOF''EOF'[C[C[C[C
+[?2004l[?2004h> [Interface]
+[?2004l[?2004h> PrivateKey = [7m[REDACTED][27m[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[REDACTED]
+[?2004l[?2004h> Address = [REDACTED]/24
+[?2004l[?2004h> ListenPort = 51820
+[?2004l[?2004h> 
+[?2004l[?2004h> [Peer]
+[?2004l[?2004h> PublicKey = [7m[REDACTED][27m[C[C[C[C[C[C[C[C[C[C[C[C[C[C[REDACTED]
+[?2004l[?2004h> AllowedIPs = [REDACTED]/32
+[?2004l[?2004h> EOF
+[?2004l[Interface]
+PrivateKey = [REDACTED]
+Address = [REDACTED]/24
+ListenPort = 51820
+
+[Peer]
+PublicKey = [REDACTED]
+AllowedIPs = [REDACTED]/32
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ d[Ksuco[K[Kdo chmod 600 /eth[Kc/wireguard/wg0.conf
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo tee /etc/sysctl.d/99-wireguard.conf << 'EOF'
+[?2004l[?2004h> net.ipv4.ip_forwardeward[1Pward[C[C[C[C = 1
+[?2004l[?2004h> EOF
+[?2004lnet.ipv4.ip_forward = 1
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo sysctl --system
+[?2004l* Applying /usr/lib/sysctl.d/10-default-yama-scope.conf ...
+* Applying /usr/lib/sysctl.d/50-coredump.conf ...
+* Applying /usr/lib/sysctl.d/50-default.conf ...
+* Applying /usr/lib/sysctl.d/50-libkcapi-optmem_max.conf ...
+* Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+* Applying /usr/lib/sysctl.d/50-redhat.conf ...
+* Applying /etc/sysctl.d/99-sysctl.conf ...
+* Applying /etc/sysctl.d/99-wireguard.conf ...
+* Applying /etc/sysctl.conf ...
+kernel.yama.ptrace_scope = 0
+kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %d %F
+kernel.core_pipe_limit = 16
+fs.suid_dumpable = 2
+kernel.sysrq = 16
+kernel.core_uses_pid = 1
+net.ipv4.conf.default.rp_filter = 2
+net.ipv4.conf.enp1s0.rp_filter = 2
+net.ipv4.conf.lo.rp_filter = 2
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.enp1s0.accept_source_route = 0
+net.ipv4.conf.lo.accept_source_route = 0
+net.ipv4.conf.default.promote_secondaries = 1
+net.ipv4.conf.enp1s0.promote_secondaries = 1
+net.ipv4.conf.lo.promote_secondaries = 1
+net.ipv4.ping_group_range = 0 2147483647
+net.core.default_qdisc = fq_codel
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+fs.protected_regular = 1
+fs.protected_fifos = 1
+net.core.optmem_max = 81920
+kernel.pid_max = 4194304
+kernel.kptr_restrict = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.enp1s0.rp_filter = 1
+net.ipv4.conf.lo.rp_filter = 1
+net.ipv4.ip_forward = 1
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo wg-quick up wg0
+[?2004l[#] ip link add wg0 type wireguard
+[#] wg setconf wg0 /dev/fd/63
+[#] ip -4 address add [REDACTED]/24 dev wg0
+[#] ip link set mtu 1420 up dev wg0
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo systemctl enable wg-quiclk[K[Kk@wg0
+[?2004lCreated symlink /etc/systemd/system/multi-user.target.wants/wg-quick@wg0.service → /usr/lib/systemd/system/wg-quick@.service.
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-02 17:13:01-05:00 [COMMAND_EXIT_CODE="0"]
