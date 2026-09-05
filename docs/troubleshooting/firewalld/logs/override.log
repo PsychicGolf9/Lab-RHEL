@@ -1,0 +1,17 @@
+Script started on 2026-09-03 16:46:35-05:00 [TERM="linux" TTY="/dev/tty1" COLUMNS="160" LINES="50"]
+[?2004h[admin@rhel-lab00 ~]$ sudo tee /etc/systemd/system/wg-quick\@wg0.service.d/override.conf > /dev/null >>[K[K<< 'EOF'
+[?2004l[?2004h> [Unit]
+[?2004l[?2004h> After=firewalld.service
+[?2004l[?2004h> Requires=firewalle[Kd.service
+[?2004l[?2004h> EOF
+[?2004l[sudo] password for admin: 
+[?2004h[admin@rhel-lab00 ~]$ sudo systemctl daemon reload[1Preload-reload
+[?2004l[?2004h[admin@rhel-lab00 ~]$ sudo systemctl restart wg-quick@wg0
+[?2004l[0;1;31mJob for wg-quick@wg0.service failed because the control process exited with error code.[0m
+[0;1;31mSee "systemctl status wg-quick@wg0.service" and "journalctl -xeu wg-quick@wg0.service" for details.[0m
+[?2004h[admin@rhel-lab00 ~]$ sudo systemctl status q[Kq[Kwg-quick@wg0.service <[K> logs/wg-sctl-1.log
+[?2004l[?2004h[admin@rhel-lab00 ~]$ sudo journalctl -xeu wg-quick@wg0.service <[K> logs/wg-jctl.log
+[?2004l[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-03 16:50:56-05:00 [COMMAND_EXIT_CODE="0"]

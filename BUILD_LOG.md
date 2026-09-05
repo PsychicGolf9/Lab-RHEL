@@ -36,7 +36,7 @@ First Boot:
 	-/etc/crypttab is edited to enable LUKS to use TPM2.
 	-The initramfs is rebuilt using dracut -f
 	-The server is rebooted to confirm TPM automatic unlocking functions.
-		--This configuration results in a bootloop where TPM failed. See the file /docs/troubleshooting/TPM Boot Failure.md for details and recovery method used.
+		--This configuration results in a bootloop where TPM failed. See the file /docs/troubleshooting/TPM Boot Failure/TPM Boot Failure.md for details and recovery method used.
 
 === Day 1 ===
 
@@ -49,14 +49,14 @@ Static IP is configured for Rocky installation using nmcli. The process is inten
   Hostname and IP are added to /etc/hosts on Arch machine.
 
 A full system update is performed using dnf update -y to ensure critical security patches are applied prior to hardening and system is free of known CVEs.
-A check is performed to look for an updated kernel using rmp -q kernel. In this instance, the running kernel is different from the installed kernel, so a system reboot is performed.
+A check is performed to look for an updated kernel using rpm -q kernel. In this instance, the running kernel is different from the installed kernel, so a system reboot is performed.
 Once the server is pushed to production, necessary reboots will be scheduled for times that least impact user experience.
 The above TPM configuration and resultant failure occured here.
-The write-up for my troubleshooting process is found at /docs/troubleshooting/TPM Boot Failure.md.
+The write-up for my troubleshooting process is found at /docs/troubleshooting/TPM Boot Failure/TPM Boot Failure.md.
 
 === Day 2 ===
 
-User is logged in over SSH
+User is logged in over SSH.
 The hardening process is started by editing /etc/ssh/sshd_config (copy attached in /docs/configs/).
 A public SSH key is copied from Arch host machine to Rocky VM using ssh-copy-id admin@rhel-lab00.
 A new terminal window is opened to test the key-authenticated login and it succeeds.
@@ -71,3 +71,17 @@ Wireguard is installed to protect admin level SSH access. See /docs/adr/WireGuar
 Wireguard keys are configured on both server (Rocky) and client (Arch).
 System is rebooted to confirm Wireguard interface initializes automatically.
 sshd_config.d/99-listen.conf is added to listen only over Wireguard IP to eliminate internet facing attack surface for admin control (file in /configs).
+
+=== Day 3 ===
+
+User is logged in over SSH.
+Hardening process is continued by configuring firewalld for strict network security.
+Log file for commands can be found at /docs/logs/Day3.log.
+During Firewalld configuration, a future issue is noted:
+	The current configuration is set to default to the Drop zone for everything, including the Wireguard interface.
+	This caused an inability to SSH to the server due to previous sshd_config settings.
+	The issue was temporarily remedied by adding the Wireguard subnet and port to the Public zone, but not the interface itself.
+	This will cause a broken handshake if wg0 ever goes down and back up.
+	It is fixed by adding the Wireguard interface explicitly to the Public zone.
+The complete write-up for reconfiguring firewalld is found at /docs/troubleshooting/firewalld.
+A complete log of commands used can be found at /docs/troubleshooting/firewalld/logs.

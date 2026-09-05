@@ -1,0 +1,25 @@
+× wg-quick@wg0.service - WireGuard via wg-quick(8) for wg0
+     Loaded: loaded (/usr/lib/systemd/system/wg-quick@.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/wg-quick@wg0.service.d
+             └─override.conf
+     Active: failed (Result: exit-code) since Thu 2026-09-03 16:48:51 CDT; 1min 18s ago
+       Docs: man:wg-quick(8)
+             man:wg(8)
+             https://www.wireguard.com/
+             https://www.wireguard.com/quickstart/
+             https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8
+             https://git.zx2c4.com/wireguard-tools/about/src/man/wg.8
+    Process: 2331 ExecStart=/usr/bin/wg-quick up wg0 (code=exited, status=254)
+   Main PID: 2331 (code=exited, status=254)
+        CPU: 158ms
+
+Sep 03 16:48:51 rhel-lab00 wg-quick[2343]: Warning: AllowedIP has nonzero host part: 10.8.0.2/24
+Sep 03 16:48:51 rhel-lab00 wg-quick[2331]: [#] ip -4 address add 10.8.0.1/24 dev wg0
+Sep 03 16:48:51 rhel-lab00 wg-quick[2331]: [#] ip link set mtu 1420 up dev wg0
+Sep 03 16:48:51 rhel-lab00 wg-quick[2331]: [#] firewall-cmd --permanent --zone=public --add-interface=wg0
+Sep 03 16:48:51 rhel-lab00 wg-quick[2364]: ERROR:dbus.proxies:Introspect error on :1.3:/org/fedoraproject/FirewallD1/config: dbus.exceptions.DBusException: org.freedesktop.DBus.Error.AccessDenied: Sender is not authorized to send message
+Sep 03 16:48:51 rhel-lab00 wg-quick[2364]: Error: Sender is not authorized to send message
+Sep 03 16:48:51 rhel-lab00 wg-quick[2331]: [#] ip link delete dev wg0
+Sep 03 16:48:51 rhel-lab00 systemd[1]: wg-quick@wg0.service: Main process exited, code=exited, status=254/n/a
+Sep 03 16:48:51 rhel-lab00 systemd[1]: wg-quick@wg0.service: Failed with result 'exit-code'.
+Sep 03 16:48:51 rhel-lab00 systemd[1]: Failed to start WireGuard via wg-quick(8) for wg0.

@@ -1,0 +1,39 @@
+Script started on 2026-09-03 14:06:00-05:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="134" LINES="34"]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo nano /etc/wu[Kie[Kreguard/wg0.conf
+[?2004l[sudo] password for admin: 
+[?2004h[?1049h[22;0;0t[1;34r(B[m[4l[?7h[39;49m[?1h=[?1h=[?25l[39;49m(B[m[H[2J[32;61H(B[0;7m[ Reading... ](B[m[32;60H(B[0;7m[ Read 8 lines ](B[m[H(B[0;7m  GNU nano 5.6.1                                          /etc/wireguard/wg0.conf                                                     [1;133H(B[m[33d(B[0;7m^G(B[m Help[33;17H(B[0;7m^O(B[m Write Out    (B[0;7m^W(B[m Where Is     (B[0;7m^K(B[m Cut[33;65H(B[0;7m^T(B[m Execute	(B[0;7m^C(B[m Location     (B[0;7mM-U(B[m Undo[33;113H(B[0;7mM-A(B[m Set Mark[34d(B[0;7m^X(B[m Exit[34;17H(B[0;7m^R(B[m Read File    (B[0;7m^\(B[m Replace	(B[0;7m^U(B[m Paste[34;65H(B[0;7m^J(B[m Justify	(B[0;7m^_(B[m Go To Line   (B[0;7mM-E(B[m Redo[34;113H(B[0;7mM-6(B[m Copy[2d(B[0;1m[32m[Interface][3d[39m(B[mPrivateKey = [REDACTED][4dAddress = 10.8.0.1/24[5dListenPort = 51820[7d(B[0;1m[32m[Peer][8d[39m(B[mPublicKey = [REDACTED][9dAllowedIPs = 10.8.0.2/24[2d[?12l[?25h[?25l[3d[?12l[?25h[?25l[4d[?12l[?25h[?25l[5d[?12l[?25h[?25l[6d[?12l[?25h[?25l[1;125H(B[0;7mModified(B[m[6;31r[6;1HM[1;34r[7;1H[?12l[?25h[?25l[A[?12l[?25h[?25l7[6;31r8M[1;34r[7;1H[?12l[?25h[?25lP[?12l[?25h[?25lo[?12l[?25h[?25ls[?12l[?25h[?25lt[?12l[?25h[?25lU[?12l[?25h[?25lp[?12l[?25h[?25l [?12l[?25h[?25l=[?12l[?25h[?25l [?12l[?25h[?25lf[?12l[?25h[?25li[?12l[?25h[?25lr[?12l[?25h[?25le[32d[K[7;14H[?12l[?25h[?25lw[?12l[?25h[?25la[?12l[?25h[?25ll[?12l[?25h[?25ll[?12l[?25h[?25l-[?12l[?25h[?25lc[?12l[?25h[?25lm[?12l[?25h[?25ld[?12l[?25h[?25l [?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lp[?12l[?25h[?25le[?12l[?25h[?25lr[?12l[?25h[?25lm[?12l[?25h[?25la[?12l[?25h[?25ln[?12l[?25h[?25le[?12l[?25h[?25ln[?12l[?25h[?25lt[?12l[?25h[?25l [?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lz[?12l[?25h[?25lo[?12l[?25h[?25ln[?12l[?25h[?25le[?12l[?25h[?25l=[?12l[?25h[?25lp[?12l[?25h[?25lu[?12l[?25h[?25lb[?12l[?25h[?25ll[?12l[?25h[?25li[?12l[?25h[?25lc[?12l[?25h[?25l	[?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25la[?12l[?25h[?25ld[?12l[?25h[?25ld[?12l[?25h[?25l-[?12l[?25h[?25li[?12l[?25h[?25ln[?12l[?25h[?25lt[?12l[?25h[?25le[?12l[?25h[?25lr[?12l[?25h[?25lf[?12l[?25h[?25la[?12l[?25h[?25lc[?12l[?25h[?25le[?12l[?25h[?25l=[?12l[?25h[?25lw[?12l[?25h[?25lg[?12l[?25h[?25l0[?12l[?25h[?25l7[8;32r8[8dM[1;34r[8;1H[?12l[?25h[?25lP[?12l[?25h[?25lo[?12l[?25h[?25ls[?12l[?25h[?25lt[?12l[?25h[?25lU[?12l[?25h[?25lp[?12l[?25h[?25l [?12l[?25h[?25l=[?12l[?25h[?25l [?12l[?25h[?25lf[?12l[?25h[?25li[?12l[?25h[?25lr[?12l[?25h[?25le[?12l[?25h[?25lw[?12l[?25h[?25la[?12l[?25h[?25ll[?12l[?25h[?25ll[?12l[?25h[?25l-[?12l[?25h[?25lc[?12l[?25h[?25lm[?12l[?25h[?25ld[?12l[?25h[?25l [?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lr[?12l[?25h[?25le[?12l[?25h[?25ll[?12l[?25h[?25lo[?12l[?25h[?25la[?12l[?25h[?25ld[?12l[?25h[?25l7[9;32r8[9dM[1;34r[9;1H[?12l[?25h[?25lP[?12l[?25h[?25lo[?12l[?25h[?25ls[?12l[?25h[?25lt[?12l[?25h[?25lD[?12l[?25h[?25lo[?12l[?25h[?25lw[?12l[?25h[?25ln[?12l[?25h[?25l [?12l[?25h[?25l=[?12l[?25h[?25l [?12l[?25h[?25lf[?12l[?25h[?25li[?12l[?25h[?25lr[?12l[?25h[?25le[?12l[?25h[?25lw[?12l[?25h[?25la[?12l[?25h[?25ll[?12l[?25h[?25ll[?12l[?25h[?25l-[?12l[?25h[?25lc[?12l[?25h[?25lm[?12l[?25h[?25ld[?12l[?25h[?25l	[?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lp[?12l[?25h[?25le[?12l[?25h[?25lr[?12l[?25h[?25lm[?12l[?25h[?25la[?12l[?25h[?25ln[?12l[?25h[?25le[?12l[?25h[?25ln[?12l[?25h[?25lt[?12l[?25h[?25l [?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lz[?12l[?25h[?25lo[?12l[?25h[?25ln[?12l[?25h[?25le[?12l[?25h[?25l-[?12l[?25h[?25l [?12l[?25h[?25l=[?12l[?25h[?25lp[?12l[?25h[?25lu[?12l[?25h[?25lb[?12l[?25h[?25ll[?12l[?25h[?25li[?12l[?25h[?25lc[?12l[?25h[?25l [?12l[?25h[?25l=[?12l[?25h[?25l=[?12l[?25h[?25l [?12l[?25h[?25l [?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lr[?12l[?25h[?25le[?12l[?25h[?25lm[?12l[?25h[?25lo[?12l[?25h[?25lv[?12l[?25h[?25le[?12l[?25h[?25l-[?12l[?25h[?25li[?12l[?25h[?25ln[?12l[?25h[?25lt[?12l[?25h[?25le[?12l[?25h[?25lr[?12l[?25h[?25lf[?12l[?25h[?25la[?12l[?25h[?25lc[?12l[?25h[?25le[?12l[?25h[?25l=[?12l[?25h[?25lw[?12l[?25h[?25lg[?12l[?25h[?25l0[?12l[?25h[?25l7[10;32r8[10dM[1;34r[10;1H[?12l[?25h[?25lP[?12l[?25h[?25lo[?12l[?25h[?25ls[?12l[?25h[?25lt[?12l[?25h[?25lD[?12l[?25h[?25lo[?12l[?25h[?25lw[?12l[?25h[?25ln[?12l[?25h[?25l [?12l[?25h[?25l-[?12l[?25h[?25l [?12l[?25h[?25l=[?12l[?25h[?25l [?12l[?25h[?25lf[?12l[?25h[?25li[?12l[?25h[?25lr[?12l[?25h[?25le[?12l[?25h[?25lw[?12l[?25h[?25la[?12l[?25h[?25ll[?12l[?25h[?25ll[?12l[?25h[?25l-[?12l[?25h[?25lc[?12l[?25h[?25lm[?12l[?25h[?25ld[?12l[?25h[?25l	[?12l[?25h[?25l-[?12l[?25h[?25l-[?12l[?25h[?25lr[?12l[?25h[?25le[?12l[?25h[?25ll[?12l[?25h[?25lo[?12l[?25h[?25la[?12l[?25h[?25ld[?12l[?25h[?25l[32;61H(B[0;7m[ Writing... ](B[m[1;125H(B[0;7m        (B[m[32;59H(B[0;7m[ Wrote 13 lines ](B[m[10;33H[?12l[?25h[?25l[32d[J[34d[?12l[?25h[34;1H[?1049l[23;0;0t[?1l>[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --permanent --zone=drop --remove-rich-rule="rule family=[1P[1@'[C[C[C[C[C[C[C[C[C[C[C[C"ipv4" source address="10.9[K8.0.0/24" por t port="33[K[K22" protocol="tcp" accept'
+[?2004l[sudo] password for admin: 
+success
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --permanent --zone=drop --add-port=51820/udp
+[?2004lsuccess
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --reloasd[K[Kd
+[?2004lsuccess
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --zone=pubn[Klic --list-all
+[?2004lpublic
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: cockpit dhcpv6-client ssh
+  ports: 51820/udp
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-03 15:53:01-05:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-09-05 12:05:53-05:00 [TERM="linux" TTY="/dev/tty1" COLUMNS="160" LINES="50"]
+[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --zone=public[C --zone=public[C --zone=public[1P--zone=public= --zone=public[1P --zone=public- --zone=public- --zone=publicp --zone=publice --zone=publicr --zone=publicm --zone=publica --zone=publicn --zone=publice --zone=publicn --zone=publict --zone=public[C[C[C[C[C[C[C[C[C[C[C[C[C[C --add-interface=wg0
+[?2004l[sudo] password for admin: 
+success
+[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --reload
+[?2004lsuccess
+[?2004h[admin@rhel-lab00 ~]$ scri[K[K[K[Kexit
+[?2004lexit
+
+Script done on 2026-09-05 12:07:33-05:00 [COMMAND_EXIT_CODE="0"]

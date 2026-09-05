@@ -1,0 +1,57 @@
+Script started on 2026-09-03 11:12:06-05:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="134" LINES="34"]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewalle[Kd[K-cmd --set-default-zone=drop
+[?2004l[sudo] password for admin: 
+success
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --reload
+[?2004l[sudo] password for admin: 
+success
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --permanent --add-rick[Kh-rule='rule family-[K=ipv4""ipv4"[C[C[C[C[C source address-[K=127.0.0.1/24[K[K32""127.0.0.1/32"[C[C[C[C[C[C[C[C[C[C[C[C[C accept'
+[?2004lsuccess
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --permann[Kent --add-rich-rule='rule family="ipv4" source address="10.8.0.0/24" port protocol="tcp " port-[K="22" accc[Kept'
+[?2004l[sudo] password for admin: 
+success
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmp[Kd --reload
+[?2004lsuccess
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --list-all
+[?2004ldrop (active)
+  target: DROP
+  icmp-block-inversion: no
+  interfaces: enp1s0
+  sources: 
+  services: 
+  ports: 
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	rule family="ipv4" source address="10.8.0.0/24" port port="22" protocol="tcp" accept
+	rule family="ipv4" source address="127.0.0.1/32" accept
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --get-active-zones
+[?2004l[sudo] password for admin: 
+drop
+  interfaces: enp1s0
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewalld-[K[K-cmd --zone=public --get-target
+[?2004l[91musage: 'firewall-cmd --help' for usage information or see firewall-cmd(1) man page
+Option can be used only with --permanent.[00m
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo firewall-cmd --zone=public --get-target[K[K[K[K[K[K[K[K[K[Klist-all
+[?2004lpublic
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: cockpit dhcpv6-client ssh
+  ports: 51820/udp
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-03 14:05:23-05:00 [COMMAND_EXIT_CODE="0"]

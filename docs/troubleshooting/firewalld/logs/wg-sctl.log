@@ -1,0 +1,8 @@
+     Active: failed (Result: exit-code) since Thu 2026-09-03 15:59:53 CDT; 24min ago
+    Process: 934 ExecStart=/usr/bin/wg-quick up wg0 (code=exited, status=254)
+   Main PID: 934 (code=exited, status=254)
+Sep 03 15:59:53 rhel-lab00 wg-quick[1028]: ERROR:dbus.proxies:Introspect error on :1.3:/org/fedoraproject/FirewallD1/config: dbus.exceptions.DBusException: org.freedesktop.DBus.Error.AccessDenied: Sender is not authorized to send message
+Sep 03 15:59:53 rhel-lab00 wg-quick[1028]: Error: Sender is not authorized to send message
+Sep 03 15:59:53 rhel-lab00 systemd[1]: wg-quick@wg0.service: Main process exited, code=exited, status=254/n/a
+Sep 03 15:59:53 rhel-lab00 systemd[1]: wg-quick@wg0.service: Failed with result 'exit-code'.
+Sep 03 15:59:53 rhel-lab00 systemd[1]: Failed to start WireGuard via wg-quick(8) for wg0.

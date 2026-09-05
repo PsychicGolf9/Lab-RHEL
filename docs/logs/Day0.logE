@@ -41,14 +41,14 @@ sr0                                            11:0    1 1024M  0 rom
 vda                                           252:0    0   30G  0 disk  
 ├─vda1                                        252:1    0    1G  0 part  /boot
 └─vda2                                        252:2    0   29G  0 part  
-  └─luks-cd142645-9481-4f7d-b866-7d02508901d1 253:0    0   29G  0 crypt 
+  └─luks-[REDACTED] 253:0    0   29G  0 crypt 
     ├─rl-root                                 253:1    0   26G  0 lvm   /
     └─rl-swap                                 253:2    0    3G  0 lvm   [SWAP]
 
 --- Physical Volumes ---
 sudo pvs 
   PV                                                    VG Fmt  Attr PSize  PFree
-  /dev/mapper/luks-cd142645-9481-4f7d-b866-7d02508901d1 rl lvm2 a--  28.98g    0 
+  /dev/mapper/luks-[REDACTED] rl lvm2 a--  28.98g    0 
 
 --- Volume Groups ---
 sudo vgs
