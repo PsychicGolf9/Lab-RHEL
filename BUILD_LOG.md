@@ -66,7 +66,7 @@ A new terminal window is opened to test the key-authenticated login and it succe
 the key PubkeyAuthentication yes is uncommented to allow using ssh keys.
 systemctl is used to restart sshd.
 
-Ansible is installed along with the community.general collection to begin IaC.
+Ansible is installed to begin IaC.
 Wireguard is installed to protect admin level SSH access. See /docs/adr/WireGuard.md for decision making process.
 Wireguard keys are configured on both server (Rocky) and client (Arch).
 System is rebooted to confirm Wireguard interface initializes automatically.
@@ -85,3 +85,21 @@ During Firewalld configuration, a future issue is noted:
 	It is fixed by adding the Wireguard interface explicitly to the Public zone.
 The complete write-up for reconfiguring firewalld is found at /docs/troubleshooting/firewalld.
 A complete log of commands used can be found at /docs/troubleshooting/firewalld/logs.
+
+=== Day 4 ===
+
+Ansible is configured to automate playbooks that will reconfigure this exact state if a complete rebuild is required or a physical machine is added to the cluster.
+The directory structure is created using mkdir -p ansible/{group_vars,inventory,playbooks,roles}.
+The files ansible.cfg and inventory/hosts.yml are configured to find and reach the VM.
+A group called "servers" is created preemtively for scalability.
+The group_vars/servers.yml file is written to inlude a packages_to_install list for base programs.
+The main playbook, site.yml, is written with a short test to ensure dnf and passwordless copying to root files functions as needed.
+	
+	--- A Note On Ansible ---
+		Ansible uses SSH for its functions and requires passwordless privilege escalation in order to automate configurations.
+		This causes a security concern if the human user is set to NOPASSWD: ALL in the sudoers file.
+		The proper way to handle this is to create a service user for Ansible that doesn't require a password for sudo and authenticates SSH using private keys
+		that are stored in a secrets handler.
+		The handler chosen for this step is sops and age.
+		A log of implementing this configuration can be found at /docs/ansible/Creating Service User.md
+

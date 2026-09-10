@@ -1,0 +1,6 @@
+packages_to_install:
+  - nano
+  - tpm2-tools
+  - wireguard-tools
+
+ssh_port: 22
