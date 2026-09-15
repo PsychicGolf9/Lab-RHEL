@@ -1,0 +1,21 @@
+Script started on 2026-09-14 14:05:58-05:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="134" LINES="34"]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo useradd -m -s /bin/bash ansible
+[?2004l[sudo] password for admin: 
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ mkdir -p[1@s[1@u[1@o[1@ [1P[1P[1@d[1@o[1@ [C[C[C[C[C[C[C[C /home/ansible/.ssh
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo cp authorized_keys /home/ansible/.sh[Ksh/
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo chown -R /home/ansible/[C /home/ansible/j /home/ansible/[1P /home/ansible/a /home/ansible/n /home/ansible/s /home/ansible/i /home/ansible/b /home/ansible/l /home/ansible/e /home/ansible/: /home/ansible/a /home/ansible/n /home/ansible/s /home/ansible/i /home/ansible/b /home/ansible/l /home/ansible/e /home/ansible/[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C.ssh/
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo chmod 700 /home/ansible/.ssh
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo chmod 600 /home/ansible/.ssh/authoized_keys
+[?2004lchmod: cannot access '/home/ansible/.ssh/authoized_keys': No such file or directory
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo chmod 600 /home/ansible/.ssh/authoized_keysrized_keys
+[?2004l]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-14 14:15:17-05:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-09-15 00:28:32-05:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="134" LINES="34"]
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ sudo usermod -p '*' ansible
+[?2004l[sudo] password for admin: 
+]0;admin@rhel-lab00:~[?2004h[admin@rhel-lab00 ~]$ exit
+[?2004lexit
+
+Script done on 2026-09-15 00:29:10-05:00 [COMMAND_EXIT_CODE="0"]

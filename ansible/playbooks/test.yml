@@ -1,0 +1,18 @@
+- name: Test Playbook
+  hosts: servers
+  gather_facts: true
+
+  tasks:
+    - name: Write userspace file
+      ansible.builtin.copy:
+        dest: ~/test.txt
+        content: "Test to check SSH connection"
+        mode: '0644'
+
+    - name: Write escalated file
+      become: true
+      ansible.builtin.copy:
+        dest: /tmp/test.txt
+        content: "Test to check privilege escalation"
+        owner: root
+        mode: '0644'

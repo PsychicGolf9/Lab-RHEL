@@ -1,6 +1,7 @@
 # Rocky Linux K3s Homelab
 
-This project documents my Rocky Linux homelab as it grows from a single virtual machine into a small K3s cluster. The purpose is to build practical experience with Linux administration, Kubernetes, infrastructure automation, GitOps, monitoring, security, and incident recovery.
+This project documents my Rocky Linux homelab as it grows from a single virtual machine into a small K3s cluster. The purpose is to build practical experience with Linux administration, Kubernetes, infrastructure automation, GitOps, monitoring, security, and incident recovery. A day-by-day, detailed log file with
+explanations of the build steps and problems encountered can be found in the BUILD_LOG.md file.
 
 The first cluster will run on one VM and expand to three nodes, but the design will remain scalable beyond three nodes. Ansible will handle host and cluster automation. Argo CD will handle GitOps-based delivery. Prometheus and Grafana will provide monitoring and dashboards.
 

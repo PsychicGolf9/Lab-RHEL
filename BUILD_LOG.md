@@ -98,8 +98,8 @@ The main playbook, site.yml, is written with a short test to ensure dnf and pass
 	--- A Note On Ansible ---
 		Ansible uses SSH for its functions and requires passwordless privilege escalation in order to automate configurations.
 		This causes a security concern if the human user is set to NOPASSWD: ALL in the sudoers file.
-		The proper way to handle this is to create a service user for Ansible that doesn't require a password for sudo and authenticates SSH using private keys
-		that are stored in a secrets handler.
-		The handler chosen for this step is sops and age.
-		A log of implementing this configuration can be found at /docs/ansible/Creating Service User.md
+		The proper way to handle this is to create a service user for Ansible that doesn't require a password for sudo and authenticates SSH using private keys.
+		A log of implementing this configuration can be found at /docs/ansible/Service User/Creating Service User.md
 
+	Note: /ansible/playbooks/00-site.yml will be replaced with something more functional later. It exists currently only as a testing playbook to verify that dnf
+		and port checking are present and working. The task that writes a file to /tmp/ is superceded by the adjacent file test.yml.
