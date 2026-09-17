@@ -1,0 +1,3 @@
+# First node, uses group defaults.
+
+ansible_pubkey: "{{ lookup('file', '~/.ssh/ansible-lab00_ed25519.pub') }}"

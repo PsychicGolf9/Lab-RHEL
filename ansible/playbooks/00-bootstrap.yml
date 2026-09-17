@@ -1,0 +1,9 @@
+- name: Bootstrap fresh install to set up user for Ansible
+  hosts: servers
+  gather_facts: true
+
+  vars:
+    ansible_user: "{{ bootstrap_user }}"
+
+  roles:
+    - user_a

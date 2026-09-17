@@ -66,7 +66,6 @@ A new terminal window is opened to test the key-authenticated login and it succe
 the key PubkeyAuthentication yes is uncommented to allow using ssh keys.
 systemctl is used to restart sshd.
 
-Ansible is installed to begin IaC.
 Wireguard is installed to protect admin level SSH access. See /docs/adr/WireGuard.md for decision making process.
 Wireguard keys are configured on both server (Rocky) and client (Arch).
 System is rebooted to confirm Wireguard interface initializes automatically.
@@ -103,3 +102,32 @@ The main playbook, site.yml, is written with a short test to ensure dnf and pass
 
 	Note: /ansible/playbooks/00-site.yml will be replaced with something more functional later. It exists currently only as a testing playbook to verify that dnf
 		and port checking are present and working. The task that writes a file to /tmp/ is superceded by the adjacent file test.yml.
+
+=== Day 5 ===
+
+Repeatable IaC roles are created and targeted towards scalability.
+The goal is to have the folder ansible/ complete every step that has been performed manually thusfar.
+This will allow the repository to act like a blueprint for machines that will be added in the future, automating and standardizing their bas configuration.
+It will also allow for a complete recovery in the event of hardware failure or other total system compromise.
+
+The overview for roles is be this:
+	1. Logs in as admin over SSH and creates a user account for itself with key only authentication and passwordless privilege escalation.
+	2. Configures SSH key authentication for user admin
+	3. Performs a full system update.
+	4. Installs base packages that will be present on all machines.
+	5. Configures TPM2 for automatic unlocking at boot time.
+	6. Assigns a static IP.
+	7. Edits /etc/ssh/sshd_config to disable root login and password login while enabling public key authentication globally.
+	8. Configures Wireguard.
+	9. Adds drop-in file to sshd_config.d/ to only allow SSH to listen over Wireguard IP.
+	10. Configures Firewalld to adhere to network security practices.
+
+Role 1:
+	A directory for this role is created at /ansible/roles/user_a/ and tasks/main.yml is also added.
+	The main.yml for user_a is written to satisfy the conditions for the first role.
+	With scalability in mind, an SSH Agent is enabled on the control machine and .ssh/config is created to resolve SSH requests externally with registered keys.
+	This allows for formatting ansible/inventory/hosts.yml to go through the agent for host resolution instead of Ansible directly, keeping even the paths to private keys out of public repositories.
+	A requirements.yml file is created with ansible.posix collection included to allow the repository to be reproduced on other machines.
+	A host-specific YAML file is created to store the public key for each host.
+	Using one key pair per node keeps the system containerized in the event of SSH compromise on a single node.
+	The remote_user field is removed from ansible.cfg to allow the agent config to resolve that as well.

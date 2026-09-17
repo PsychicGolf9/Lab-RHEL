@@ -1,0 +1,35 @@
+- name: Create Ansible control user
+  become: true
+  ansible.builtin.user:
+    name: ansible
+    shell: /bin/bash
+    groups: wheel
+    append: true
+    password_lock: true
+
+- name: Install Ansible's SSH ansible_pubkey
+  become: true
+  ansible.posix.authorized_key:
+    user: ansible
+    key: "{{ ansible_pubkey }}"
+    state: present
+    exclusive: true
+
+- name: Configure passwordless escalation for Ansible
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/ansible
+    content: "ansible ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Sudo test
+  become: true
+  become_user: ansible
+  ansible.builtin.command:
+    sudo -n whoami
+  register: user_a_sudo_test
+  changed_when: false
+  failed_when: user_a_sudo_test.stdout != 'root'

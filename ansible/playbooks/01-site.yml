@@ -1,0 +1,4 @@
+- name: Create system using roles
+  hosts: servers
+  become: true
+  gather_facts: true
