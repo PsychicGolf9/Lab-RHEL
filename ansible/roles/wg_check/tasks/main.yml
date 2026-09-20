@@ -1,0 +1,13 @@
+- name: Check if WireGuard is up
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: 22
+    timeout: 2
+  register: wg_check_result
+  ignore_errors: true
+
+- name: Fallback to IPv4 if down
+  ansible.builtin.set_fact:
+    ansible_host: "{{ ansible_host_inet }}"
+  when: wg_check_result is failed

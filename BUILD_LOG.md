@@ -112,12 +112,12 @@ It will also allow for a complete recovery in the event of hardware failure or o
 
 The overview for roles is be this:
 	1. Logs in as admin over SSH and creates a user account for itself with key only authentication and passwordless privilege escalation.
-	2. Configures SSH key authentication for user admin
-	3. Performs a full system update.
-	4. Installs base packages that will be present on all machines.
-	5. Configures TPM2 for automatic unlocking at boot time.
-	6. Assigns a static IP.
-	7. Edits /etc/ssh/sshd_config to disable root login and password login while enabling public key authentication globally.
+	2. Configures SSH key authentication for user admin.
+	3. Edits /etc/ssh/sshd_config to disable root login and password login while enabling public key authentication globally.
+	4. Assigns a static IP.
+	5. Performs a full system update.
+	6. Installs base packages that will be present on all machines.
+	7. Configures TPM2 for automatic unlocking at boot time.
 	8. Configures Wireguard.
 	9. Adds drop-in file to sshd_config.d/ to only allow SSH to listen over Wireguard IP.
 	10. Configures Firewalld to adhere to network security practices.
@@ -131,3 +131,26 @@ Role 1:
 	A host-specific YAML file is created to store the public key for each host.
 	Using one key pair per node keeps the system containerized in the event of SSH compromise on a single node.
 	The remote_user field is removed from ansible.cfg to allow the agent config to resolve that as well.
+
+=== Day 6 ===
+
+A new, physical machine is added to the cluster.
+The Rocky 9.8 ISO is booted, and a minimal installation is chosen.
+A user named admin is created for continuity across nodes and root login is disabled.
+All other settings are identical to the VM installation.
+	Note:
+		This node will be treated as a fault-tolerant production device on the network.
+		All configuration will be built by ansible playbooks instead of manually.
+		The VM's role in the cluster is now primarily a testing environment for playbooks before getting pushed to production.
+		To distinguish between the two, they are named rhel-lab00 and rhel-lab01 for VM and PM respectively.
+
+The first boot of rhel-lab01 resulted in an inability to connect to the network due to missing packages, see docs/troubleshooting/Lab01 Network Failure/ for details.
+	Note:
+        WLAN is unreliable and has a much slower connection than a wired connection, but the physical lab infrastructure doesn't support ethernet connectivity at
+        this time. A wired connection is planned for the future as budget allows.
+
+After Wifi connection is established, an intermittent disconnection is noted where the interface disconnects after sitting idle for longer than 10-15 minutes.
+See docs/troubleshooting/Lab01 Network Disconnect/ for details.
+	Note:
+		After performing the 24 hour evaluation of the issue resulting in system connection stability, an Ansible role will be created to automate this configuration for future nodes.
+

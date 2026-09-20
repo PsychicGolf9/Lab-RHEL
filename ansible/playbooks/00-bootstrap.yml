@@ -4,11 +4,11 @@
 
   vars:
     ansible_user: "{{ bootstrap_user }}"
-    ansible_host: rhel-lab00-admin
+    ansible_host: "{{ ansible_host_inet }}"
 
   #
   #
-  # !!!!!!! MAKE SURE TO RUN THIS PLAY WITH THE -K FLAG SO ANSIBLE PROMPTS FOR THE SUDO PASSWORD !!!!!!!
+  # !!!!!!! MAKE SURE TO RUN THIS PLAY WITH THE -Kk FLAG SO ANSIBLE PROMPTS FOR THE SUDO AND SSH PASSWORDS !!!!!!!
   #
   #
 
