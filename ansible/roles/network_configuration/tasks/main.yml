@@ -1,0 +1,4 @@
+- name: Configure WLAN power management
+  ansible.builtin.include_tasks:
+    file: wifi_powersave.yml
+  when: network_connection_type | default('wired') == 'wireless'

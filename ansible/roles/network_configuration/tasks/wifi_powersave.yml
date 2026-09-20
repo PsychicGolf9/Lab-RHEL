@@ -15,4 +15,4 @@
           [connection]
           wifi.powersave = 2
         mode: '0644'
-      notify: Restart NetworkManager
+      notify: restart networkmanager

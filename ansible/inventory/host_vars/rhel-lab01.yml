@@ -1,1 +1,2 @@
 ansible_pubkey: "{{ lookup('file', '~/.ssh/ansible-lab01_ed25519.pub') }}"
+network_connection_type: 'wireless'
