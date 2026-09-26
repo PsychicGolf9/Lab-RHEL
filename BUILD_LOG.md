@@ -154,3 +154,8 @@ See docs/troubleshooting/Lab01 Network Disconnect/ for details.
 	Note:
 		After performing the 24 hour evaluation of the issue resulting in system connection stability, an Ansible role will be created to automate this configuration for future nodes.
 
+=== Day 7 ===
+
+From here on, logs will be kept by commit history with Ansible roles and playbooks being added incrementally instead of the daily journal format.
+Playbooks will be tested against rhel-lab00 before using them against rhel-lab01 by adding "--limit rhel-lab00 --check --diff" to the ansible-playbook command.
+If an error is found or a configuration needs more explanation than viewing Ansible roles and playbooks, it will be referenced here by days since last reboot.

@@ -1,4 +1,14 @@
-- name: Create system using roles
+- name: Connect to the right IP
   hosts: servers
-  become: true
-  gather_facts: true
+  gather_facts: false
+
+  roles:
+    - wg_check
+    - package_install
+
+# - name: Configure the WG, Firewalld, and lockdown SSH
+#   hosts: servers
+#   gather_facts: false
+
+#   roles:
+#    - network_configuration

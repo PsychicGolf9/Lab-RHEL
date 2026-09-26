@@ -1,4 +1,5 @@
 # First node, uses group defaults.
 
+# ansible_private_key: "{{ lookup('file', '~/.ssh/ansible-lab00_ed25519') }}"
 ansible_pubkey: "{{ lookup('file', '~/.ssh/ansible-lab00_ed25519.pub') }}"
 network_connection_type: 'wireless'

@@ -2,7 +2,7 @@
 bootstrap_user: admin
 
 # Automation user
-control_user: ansible
+ansible_user: ansible
 
 packages_to_install:
   - nano

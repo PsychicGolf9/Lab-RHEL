@@ -11,3 +11,6 @@
   ansible.builtin.set_fact:
     ansible_host: "{{ ansible_host_inet }}"
   when: wg_check_result is failed
+
+- name: Manually gather facts after correct IP is set
+  ansible.builtin.setup:
