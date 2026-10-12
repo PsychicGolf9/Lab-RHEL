@@ -1,14 +1,33 @@
-- name: Connect to the right IP
+- name: Connect, install, and configure base packages, WireGuard, and Firewalld
   hosts: servers
   gather_facts: false
 
   roles:
     - wg_check
-    - package_install
+    - base_pkg_install
 
-# - name: Configure the WG, Firewalld, and lockdown SSH
-#   hosts: servers
-#   gather_facts: false
+  tasks:
+    - name: Set WiFi powersave to off
+      ansible.builtin.include_role:
+        name: network_configuration
+        tasks_from: wifi_powersave
 
-#   roles:
-#    - network_configuration
+    - name: Configure WireGuard
+      ansible.builtin.include_role:
+        name: network_configuration
+        tasks_from: wireguard
+
+    - name: Configure Firewalld
+      ansible.builtin.include_role:
+        name: network_configuration
+        tasks_from: firewalld
+
+- name: Harden SSH to listen only over WG address
+  hosts: servers
+  gather_facts: true
+
+  tasks:
+    - name: Harden SSH
+      ansible.builtin.include_role:
+        name: network_configuration
+        tasks_from: sshd

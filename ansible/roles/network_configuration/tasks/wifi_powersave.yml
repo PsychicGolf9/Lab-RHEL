@@ -10,7 +10,7 @@
 
     - name: Create Drop In File To Disable Wifi-Powersaving
       ansible.builtin.copy:
-        dest: /etc/NetworkManager/conf.d/wifi-powersave.conf
+        dest: /etc/NetworkManager/conf.d/99-wifi-powersave.conf
         content: |
           [connection]
           wifi.powersave = 2

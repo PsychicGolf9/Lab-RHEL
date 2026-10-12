@@ -1,5 +1,5 @@
 - name: Install required packages
   become: true
   ansible.builtin.dnf:
-    name: "{{ packages_to_install }}"
+    name: "{{ base_pkg_install }}"
     state: present

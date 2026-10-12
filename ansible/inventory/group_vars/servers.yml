@@ -4,7 +4,10 @@ bootstrap_user: admin
 # Automation user
 ansible_user: ansible
 
-packages_to_install:
+# WG IP for control control_node
+control_node: 10.8.0.2
+
+base_pkg_install:
   - nano
   - tpm2-tools
   - wireguard-tools

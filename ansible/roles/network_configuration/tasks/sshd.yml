@@ -1,0 +1,17 @@
+- name: Ensure drop-in directory is enabled in sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Include /etc/ssh/sshd_config.d/'
+    line: 'Include /etc/ssh/sshd_config.d/*.conf'
+    state: present
+  notify: reload sshd
+
+- name: Add sshd drop-in file to listen only over WireGuard IP
+  ansible.builtin.copy:
+    content: |
+      ListenAddress {{ control_node }}
+    dest: /etc/ssh/sshd_config.d/99-listen.conf
+    mode: '0664'
+    owner: root
+    group: root
+  notify: reload sshd
