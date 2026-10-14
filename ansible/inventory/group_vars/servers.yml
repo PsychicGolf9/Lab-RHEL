@@ -6,6 +6,8 @@ ansible_user: ansible
 
 # WG IP for control control_node
 control_node: 10.8.0.2
+wg_control_public_key: "oFwk3k8eBbLLy22JSsBJ5FVxm00Nz0HKxKb33Yjs4UM="
+wg_port: 51820
 
 base_pkg_install:
   - nano

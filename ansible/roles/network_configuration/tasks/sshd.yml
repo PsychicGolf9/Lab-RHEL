@@ -4,14 +4,30 @@
     regexp: '^#?Include /etc/ssh/sshd_config.d/'
     line: 'Include /etc/ssh/sshd_config.d/*.conf'
     state: present
-  notify: reload sshd
 
 - name: Add sshd drop-in file to listen only over WireGuard IP
   ansible.builtin.copy:
     content: |
-      ListenAddress {{ control_node }}
+      ListenAddress {{ ansible_host }}
     dest: /etc/ssh/sshd_config.d/99-listen.conf
-    mode: '0664'
+    mode: '0600'
     owner: root
     group: root
-  notify: reload sshd
+
+- name: Test sshd before reloading
+  ansible.builtin.command: sshd -t
+  become: true
+  changed_when: false
+  failed_when: false
+  register: network_configuration_sshd_test
+
+- name: Abort if config invalid
+  ansible.builtin.fail:
+    msg: "sshd config invalid on {{ inventory_hostname }}: {{ network_configuration_sshd_test.stderr }}"
+  when: network_configuration_sshd_test.rc != 0
+
+- name: Reload sshd to apply config
+  ansible.builtin.systemd:
+    name: sshd
+    state: reloaded
+  when: network_configuration_sshd_test.rc == 0

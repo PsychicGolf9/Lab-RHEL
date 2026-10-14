@@ -1,0 +1,13 @@
+- name: Validate host_vars
+  ansible.builtin.include_vars:
+    file: "{{ inventory_hostname }}.yml"
+    name: _host_vars_test
+  failed_when: false
+  register: validate_vars_result
+
+- name: Abort if host_vars is malformed
+  ansible.builtin.fail:
+    msg: |
+      {{ inventory_hostname }} has malformed variables in {{ inventory_hostname }}.yml
+      Error: {{ validate_vars_result.msg }}
+  when: validate_vars_result is failed

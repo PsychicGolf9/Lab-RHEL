@@ -1,17 +1,46 @@
 #! /usr/bin/env bash
 set -euo pipefail
 
+# !!! This script is meant to generate WG keys and set them in Ansible's host_vars folder for use in configuring WG. !!!
+# !!! It does not configure WG or should it be used for WG configuration changes, use Ansible instead. !!!
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-INVENTORY_FILE="bash_inventory"
+INVENTORY_FILE="$SCRIPT_DIR/bash_inventory"
 HOST_VARS_DIR="$SCRIPT_DIR/../ansible/inventory/host_vars"
 VAULT_PASS="$SCRIPT_DIR/../vpass.txt"
 
-# echo "[DEBUG] VAULT_PASS = $VAULT_PASS"
+# Check if deps are installed
+if ! command -v wg > /dev/null 2>&1; then
+    echo "[ERROR] wg command not found."
+    echo "        Install wg-tools and re-run script"
+    exit 1
+fi
+
+if ! command -v ansible-vault > /dev/null 2>&1; then
+    echo "[ERROR] ansible-vault command not found."
+    echo "        Install ansible-core and re-run script"
+    exit 1
+fi
+
 echo "[DEBUG] INVENTORY_FILE = $INVENTORY_FILE"
 
 # Disable history to keep private keys out of userspace
 HISTFILE=/dev/null
 set +o history
+
+if [[ ! -f "$VAULT_PASS" ]]; then
+    echo "[ERROR] Vault password file not found."
+    echo "        Create a password file at: $VAULT_PASS"
+    exit 1
+fi
+
+perms=$(stat -c '%a' "$VAULT_PASS")
+if [[ "$perms" != 600 ]]; then
+    echo "[ERROR] Vault password file has insecure permissions: $perms"
+    echo "        Expected: 600"
+    echo "        Enter: chmod 600 $VAULT_PASS"
+    exit 1
+fi
 
 while IFS= read -r node; do
     echo "[DEBUG] processing: '$node'"
@@ -41,8 +70,8 @@ while IFS= read -r node; do
     echo "[DEBUG] wg pubkey succeeded"
 
     echo "[DEBUG] running ansible-vault encrypt_string..."
-    encrypted_key=$(ansible-vault encrypt_string "$private_key" \
-        --name 'network_configuration_wg_private_key' \
+    encrypted_key=$(printf '%s' "$private_key" | \
+        ansible-vault encrypt_string --stdin-name 'network_configuration_wg_private_key' \
         --vault-password-file "$VAULT_PASS")
     echo "[DEBUG] ansible-vault succeeded"
 

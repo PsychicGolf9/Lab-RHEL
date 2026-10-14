@@ -5,6 +5,7 @@
   roles:
     - wg_check
     - base_pkg_install
+    - validate_vars
 
   tasks:
     - name: Set WiFi powersave to off

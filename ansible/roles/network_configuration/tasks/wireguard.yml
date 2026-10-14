@@ -1,0 +1,15 @@
+- name: Establish WireGuard server config
+  ansible.builtin.template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: '0600'
+    owner: root
+    group: root
+  notify: Restart wg-quick
+  no_log: true
+
+- name: Enable and start WireGuard
+  ansible.builtin.systemd:
+    name: wg-quick@wg0
+    enabled: true
+    state: started
