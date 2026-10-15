@@ -1,9 +1,10 @@
 #jinja2: keep_trailing_newline: True
 [Interface]
-Address = {{ ansible_host }}
+Address = {{ ansible_host }}/32
 PrivateKey = {{ network_configuration_wg_private_key }}
 ListenPort = {{ wg_port }}
 
 [Peer]
 PublicKey = {{ wg_control_public_key }}
 AllowedIPs = {{ control_node }}/32
+PersistentKeepalive = 25

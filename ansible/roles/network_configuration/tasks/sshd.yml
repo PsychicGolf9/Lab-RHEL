@@ -1,33 +1,110 @@
-- name: Ensure drop-in directory is enabled in sshd_config
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: '^#?Include /etc/ssh/sshd_config.d/'
-    line: 'Include /etc/ssh/sshd_config.d/*.conf'
-    state: present
+- name: Read admin authorized_keys
+  ansible.builtin.slurp:
+    src: "/home/{{ admin_user }}/.ssh/authorized_keys"
+  register: network_configuration_admin_authkeys_raw
+  failed_when: false
 
-- name: Add sshd drop-in file to listen only over WireGuard IP
+- name: Verify each admin key is enrolled
+  ansible.builtin.assert:
+    that:
+      - network_configuration_admin_authkeys_raw.content is defined
+      - item in (network_configuration_admin_authkeys_raw.content | b64decode)
+    fail_msg: |-
+      {{ inventory_hostname }}: Admin key '{{ item.split(' ')[1][:20] }}...' not found in '{{ admin_user }}'\'s authorized keys.
+      Make sure to enroll '{{ admin_user }}'\'s keys with the node and run again. This task will not lock SSH to a WireGuard tunnel until you do.
+    quiet: true
+  loop: "{{ admin_ssh_pubkeys }}"
+
+- name: Check control node can reach this host over WG
+  delegate_to: localhost
+  ansible.builtin.command:
+    ping -c 1 -W 2 {{ ansible_host }}
+  register: network_configuration_wg_ping
+  changed_when: false
+  failed_when: false
+
+- name: Abort if WG tunnel is down
+  ansible.builtin.assert:
+    that:
+      - network_configuration_wg_ping.rc == 0
+    fail_msg: |-
+      {{ inventory_hostname }}: Control node cannot reach {{ ansible_host }} over WireGuard tunnel.
+      Configuring SSH to only listen over a WireGuard IP will result in a lockout.
+      Ensure your WireGuard configuration is correct and try again... This task will not complete until you do so.
+    quiet: true
+  when: lockdown_ssh | bool
+
+# === Deploy drop-in file based on lockdown_ssh variable being set in group_vars ===
+
+- name: Deploy standard sshd listen drop-in when lockdown is disabled
+  ansible.builtin.copy:
+    content: |
+      ListenAddress 0.0.0.0
+    dest: /etc/ssh/sshd_config.d/99-standard.conf
+    owner: root
+    group: root
+    mode: '0600'
+  when: not lockdown_ssh | bool
+  notify: reload sshd
+
+- name: Remove standard listen drop-in when lockdown is enabled
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d/99-standard.conf
+    state: absent
+  when: lockdown_ssh | bool
+  notify: reload sshd
+
+- name: Deploy WG sshd listen drop-in when lockdown is enabled
   ansible.builtin.copy:
     content: |
       ListenAddress {{ ansible_host }}
-    dest: /etc/ssh/sshd_config.d/99-listen.conf
-    mode: '0600'
+    dest: /etc/ssh/sshd_config.d/99-wireguard.conf
     owner: root
     group: root
+    mode: '0600'
+  when: lockdown_ssh | bool
+  notify: reload sshd
 
-- name: Test sshd before reloading
-  ansible.builtin.command: sshd -t
-  become: true
+- name: Remove WG sshd listen drop-in when lockdown is disabled
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d/99-wireguard.conf
+    state: absent
+  when: not lockdown_ssh | bool
+  notify: reload sshd
+
+# === Verification ===
+
+- name: Read sshd configuration
+  ansible.builtin.command:
+    sshd -T
+  changed_when: false
+  check_mode: false
+  register: network_configuration_sshd_conf
+
+- name: Abort if permissive auth remains after hardening step
+  ansible.builtin.assert:
+    that:
+      - "'passwordauthentication no' in network_configuration_sshd_conf.stdout"
+      - "'permitrootlogin no' in network_configuration_sshd_conf.stdout"
+    fail_msg: |-
+      {{ inventory_hostname }}: Effective SSH config still permits password authentication or root login.
+      Edit /etc/ssh/sshd_config and try again. This task will not complete with permissive configuration.
+    quiet: true
+  when: lockdown_ssh | bool
+
+# === SSH syntax check ===
+
+- name: Test sshd config before reloading
+  ansible.builtin.command:
+    sshd -t
   changed_when: false
   failed_when: false
   register: network_configuration_sshd_test
 
-- name: Abort if config invalid
+- name: Abort if sshd config test fails
   ansible.builtin.fail:
-    msg: "sshd config invalid on {{ inventory_hostname }}: {{ network_configuration_sshd_test.stderr }}"
+    msg: |-
+      {{ inventory_hostname }}: Error in sshd config and test failed -- changes NOT made.
+      Check error logs and try again.
+      Logs: {{ network_configuration_sshd_test.stderr }}
   when: network_configuration_sshd_test.rc != 0
-
-- name: Reload sshd to apply config
-  ansible.builtin.systemd:
-    name: sshd
-    state: reloaded
-  when: network_configuration_sshd_test.rc == 0

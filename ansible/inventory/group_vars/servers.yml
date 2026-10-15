@@ -1,5 +1,6 @@
 # Default user
-bootstrap_user: admin
+admin_user: admin
+admin_ssh_pubkeys: "{{ lookup('file', '~/.ssh/admin-lab_ed25519.pub') }}"
 
 # Automation user
 ansible_user: ansible
@@ -8,6 +9,9 @@ ansible_user: ansible
 control_node: 10.8.0.2
 wg_control_public_key: "oFwk3k8eBbLLy22JSsBJ5FVxm00Nz0HKxKb33Yjs4UM="
 wg_port: 51820
+
+# Toggle to turn off/on sshd hardening over WireGuard
+lockdown_ssh: true # True by default
 
 base_pkg_install:
   - nano

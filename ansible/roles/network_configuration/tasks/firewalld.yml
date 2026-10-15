@@ -1,0 +1,116 @@
+- name: Ensure firewalld is running and enabled
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Check current default zone
+  ansible.builtin.command:
+    firewall-cmd --get-default-zone
+  changed_when: false
+  check_mode: false
+  register: network_configuration_current_zone_default
+
+- name: Set default zone to drop
+  ansible.builtin.command:
+    firewall-cmd --set-default-zone=drop
+  when: network_configuration_current_zone_default.stdout != 'drop'
+  changed_when: true
+
+- name: Assign LAN interface to Drop
+  ansible.posix.firewalld:
+    zone: drop
+    interface: "{{ network_lan_interface }}"
+    permanent: true
+    immediate: false
+    state: enabled
+  notify: reload firewalld
+
+- name: Allow WG handshake
+  ansible.posix.firewalld:
+    zone: drop
+    port: "{{ wg_port }}/udp"
+    permanent: true
+    immediate: false
+    state: enabled
+  notify: reload firewalld
+
+- name: Enable forwarding in Drop
+  ansible.posix.firewalld:
+    zone: drop
+    forward: true
+    permanent: true
+    immediate: false
+    state: enabled
+  notify: reload firewalld
+
+- name: Assign wg0 to management zone
+  ansible.posix.firewalld:
+    zone: "{{ wg_zone | default('public', true) }}"
+    interface: wg0
+    permanent: true
+    immediate: false
+    state: enabled
+  notify: reload firewalld
+
+- name: Remove unwanted services from wg0 zone
+  ansible.posix.firewalld:
+    zone: "{{ wg_zone | default('public', true) }}"
+    service: "{{ item }}"
+    permanent: true
+    immediate: false
+    state: disabled
+  loop:
+    - cockpit
+    - dhcpv6-client
+    - mdns
+  notify: reload firewalld
+
+- name: Allow SSH over wg0
+  ansible.posix.firewalld:
+    zone: "{{ wg_zone | default('public', true) }}"
+    service: ssh
+    permanent: true
+    immediate: false
+    state: enabled
+  notify: reload firewalld
+
+# === Checks to ensure a lockout doesn't occur ===
+
+- name: Verify wg0 is up
+  ansible.builtin.command:
+    ip -br addr show wg0
+  changed_when: false
+  check_mode: false
+  register: network_configuration_wg0_status
+
+- name: Abort if wg0 isn't up
+  ansible.builtin.assert:
+    that:
+      "'UP' in network_configuration_wg0_status.stdout"
+    fail_msg: |-
+      {{ inventory_hostname }}: wg0 is not up.
+      Firewalld reload FAILED: Tunnel must be active before applying this config.
+      Check connections, set wg-quick@wg0 down and back up, then retry.
+    quiet: true
+
+- name: Verify SSH is permitted in wg0 zone
+  ansible.builtin.command:
+    "firewalld-cmd --zone={{ wg_zone | default('public', true) }} --list-services | grep -W ssh"
+  changed_when: false
+  check_mode: false
+  register: network_configuration_wg_ssh_check
+
+- name: Abort if SSH not in wg0 zone
+  ansible.builtin.assert:
+    that:
+      - "network_configuration_wg_ssh_check.rc == 0"
+    fail_msg: |-
+      {{ inventory_hostname }}: ssh not found in {{ wg_zone | default('public', true) }} zone.
+      Firewalld reload FAILED: SSH must be permitted before applying this config.
+      Check with firewall-cmd --list-all-zones for ssh. If it is absent, or in the Drop zone, a lockout will occur.
+    quiet: true
+
+- name: Apply changes
+  ansible.builtin.meta:
+    flush_handlers

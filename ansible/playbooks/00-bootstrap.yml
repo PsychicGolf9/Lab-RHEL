@@ -3,7 +3,7 @@
   gather_facts: true
 
   vars:
-    ansible_user: "{{ bootstrap_user }}"
+    ansible_user: "{{ admin_user }}"
     ansible_host: "{{ ansible_host_inet }}"
 
   #
