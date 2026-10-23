@@ -96,7 +96,7 @@
 
 - name: Verify SSH is permitted in wg0 zone
   ansible.builtin.command:
-    "firewalld-cmd --zone={{ wg_zone | default('public', true) }} --list-services | grep -W ssh"
+    "firewall-cmd --zone={{ wg_zone | default('public', true) }} --list-services | grep -W ssh"
   changed_when: false
   check_mode: false
   register: network_configuration_wg_ssh_check

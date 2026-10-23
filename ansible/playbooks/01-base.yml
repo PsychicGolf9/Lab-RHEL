@@ -31,4 +31,12 @@
     - name: Harden SSH
       ansible.builtin.include_role:
         name: network_configuration
-        tasks_from: sshd
+        tasks_from: sshd_wg
+
+# !!! This only runs if tpm2_enabled is set to true. Make sure to run luks_passphrase.sh before you run this play if you enable TPM.
+- name: Preflight checks, enroll, and regen initramfs
+  hosts: servers
+  gather_facts: true
+
+  roles:
+    - tpm2

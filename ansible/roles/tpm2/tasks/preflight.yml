@@ -1,0 +1,307 @@
+# Preflight checks for the optional TPM2 LUKS role.
+# This role supports an explicitly enabled TPM2 host with a LUKS2-backed
+# root filesystem exposed through /dev/mapper.
+
+- name: Assert TPM2 support is explicitly enabled
+  ansible.builtin.assert:
+    that:
+      - tpm2_enabled | default(false) | bool
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2_enabled is false or undefined.
+      This task file must only be included when TPM2 enrollment is enabled.
+    success_msg: "TPM2 enrollment is enabled for {{ inventory_hostname }}."
+  changed_when: false
+  check_mode: false
+
+- name: Assert the LUKS passphrase is available
+  ansible.builtin.assert:
+    that:
+      - tpm2luks_passphrase is defined
+      - tpm2luks_passphrase | string | length > 0
+    success_msg: "LUKS passphrase is available for enrollment recovery."
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2luks_passphrase is missing or empty.
+      Run scripts/luks_passphrase.sh and try again.
+  changed_when: false
+  check_mode: false
+
+- name: Assert PCR configuration is defined
+  ansible.builtin.assert:
+    that:
+      - tpm2_pcrs is defined
+      - tpm2_pcrs | string | length > 0
+    fail_msg: "{{ inventory_hostname }}: tpm2_pcrs is missing or empty."
+  changed_when: false
+  check_mode: false
+
+- name: Validate PCR configuration syntax
+  ansible.builtin.assert:
+    that:
+      - tpm2_pcrs | string is match('^[0-9]+(\\+[0-9]+)*$')
+    success_msg: "PCR specification {{ tpm2_pcrs }} has valid syntax."
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2_pcrs={{ tpm2_pcrs }} is invalid.
+      Use a plus-separated list such as 0+2+4+7.
+  changed_when: false
+  check_mode: false
+
+- name: Validate PCR indexes
+  ansible.builtin.assert:
+    that:
+      - (item | int) >= 0
+      - (item | int) <= 23
+    fail_msg: >-
+      {{ inventory_hostname }}: PCR index {{ item }} is outside the supported
+      range 0-23.
+  loop: "{{ tpm2_pcrs | string | split('+') }}"
+  changed_when: false
+  check_mode: false
+
+- name: Get the active root mount source
+  ansible.builtin.command:
+    argv:
+      - findmnt
+      - -rnso
+      - SOURCE
+      - /
+  register: tpm2_root_source
+  changed_when: false
+  check_mode: false
+
+- name: Assert that root uses the supported device-mapper layout
+  ansible.builtin.assert:
+    that:
+      - tpm2_root_source.rc == 0
+      - tpm2_root_source.stdout | trim is match('^/dev/mapper/[^/]+$')
+    success_msg: "Root source {{ tpm2_root_source.stdout | trim }} uses /dev/mapper."
+    fail_msg: >-
+      {{ inventory_hostname }}: root source '{{ tpm2_root_source.stdout | trim }}'
+      is outside this role's supported scope. TPM2 enrollment requires a
+      LUKS2-backed root device exposed through /dev/mapper.
+  changed_when: false
+  check_mode: false
+
+- name: Set the root mapper name
+  ansible.builtin.set_fact:
+    tpm2_mapper_name: "{{ tpm2_root_source.stdout | trim | regex_replace('^/dev/mapper/', '') }}"
+  changed_when: false
+  check_mode: false
+
+- name: Discover the LUKS ancestor of the root mapper
+  ansible.builtin.shell: |
+    set -o pipefail
+    lsblk -s -p -n -o PATH,FSTYPE "{{ tpm2_root_source.stdout | trim }}" \
+      | awk '$2 == "crypto_LUKS" { print $1; exit }'
+  args:
+    executable: /bin/bash
+  register: tpm2_luks_ancestor
+  changed_when: false
+  check_mode: false
+
+- name: Set the discovered LUKS device
+  ansible.builtin.set_fact:
+    tpm2_device: "{{ tpm2_luks_ancestor.stdout | trim }}"
+  when: tpm2_luks_ancestor.stdout | trim | length > 0
+  changed_when: false
+  check_mode: false
+
+- name: Assert that a LUKS ancestor was discovered
+  ansible.builtin.assert:
+    that:
+      - tpm2_luks_ancestor.rc == 0
+      - tpm2_device is defined
+      - tpm2_device | length > 0
+      - tpm2_device is match('^/dev/.+')
+    success_msg: "Discovered LUKS device {{ tpm2_device }}."
+    fail_msg: >-
+      {{ inventory_hostname }}: no LUKS ancestor was found beneath
+      {{ tpm2_root_source.stdout | trim }}. This host is outside the supported
+      TPM2 role scope, or the storage topology requires an explicit role change.
+  changed_when: false
+  check_mode: false
+
+- name: Verify that the discovered device is a LUKS container
+  ansible.builtin.command:
+    argv:
+      - cryptsetup
+      - isLuks
+      - "{{ tpm2_device }}"
+  register: tpm2_is_luks
+  changed_when: false
+  check_mode: false
+
+- name: Assert that the TPM2 device is LUKS2
+  ansible.builtin.command:
+    argv:
+      - cryptsetup
+      - luksDump
+      - --dump-json-metadata
+      - "{{ tpm2_device }}"
+  register: tpm2_luks_json
+  changed_when: false
+  check_mode: false
+
+- name: Parse LUKS2 metadata
+  ansible.builtin.set_fact:
+    tpm2_luks_meta: "{{ tpm2_luks_json.stdout | from_json }}"
+  changed_when: false
+  check_mode: false
+
+- name: Verify LUKS2 format
+  ansible.builtin.assert:
+    that:
+      - tpm2_is_luks.rc == 0
+      - tpm2_luks_meta.format | default('') == 'luks2'
+    success_msg: "{{ tpm2_device }} is a LUKS2 container."
+    fail_msg: >-
+      {{ inventory_hostname }}: {{ tpm2_device }} is not a readable LUKS2
+      container. TPM2 enrollment is not supported for this device.
+  changed_when: false
+  check_mode: false
+
+- name: Collect passphrase-capable LUKS2 keyslots
+  ansible.builtin.set_fact:
+    tpm2_passphrase_keyslots: >-
+      {{ tpm2_luks_meta.keyslots | default({}) | dict2items
+        | selectattr('value.type', 'defined')
+        | selectattr('value.type', 'equalto', 'luks2')
+        | selectattr('value.kdf', 'defined')
+        | map(attribute='key')
+        | list }}
+  changed_when: false
+  check_mode: false
+
+- name: Assert that a recovery passphrase keyslot exists
+  ansible.builtin.assert:
+    that:
+      - tpm2_passphrase_keyslots | length > 0
+    success_msg: >-
+      Passphrase-capable LUKS2 keyslot(s) detected:
+      {{ tpm2_passphrase_keyslots | join(', ') }}.
+    fail_msg: >-
+      {{ inventory_hostname }}: no passphrase-capable LUKS2 keyslot was found
+      on {{ tpm2_device }}. Keep a manual recovery credential before enrolling
+      TPM2, or add a passphrase keyslot with cryptsetup luksAddKey.
+  changed_when: false
+  check_mode: false
+
+- name: Get the LUKS UUID
+  ansible.builtin.command:
+    argv:
+      - cryptsetup
+      - luksUUID
+      - "{{ tpm2_device }}"
+  register: tpm2_uuid_result
+  changed_when: false
+  check_mode: false
+
+- name: Set the discovered LUKS UUID
+  ansible.builtin.set_fact:
+    tpm2_uuid: "{{ tpm2_uuid_result.stdout | trim }}"
+  changed_when: false
+  check_mode: false
+
+- name: Assert that the LUKS UUID was discovered
+  ansible.builtin.assert:
+    that:
+      - tpm2_uuid_result.rc == 0
+      - tpm2_uuid | length > 0
+    success_msg: "LUKS UUID {{ tpm2_uuid }} discovered for {{ tpm2_device }}."
+    fail_msg: "{{ inventory_hostname }}: could not determine the LUKS UUID."
+  changed_when: false
+  check_mode: false
+
+- name: Check for an available TPM2 device
+  ansible.builtin.command:
+    argv:
+      - systemd-cryptenroll
+      - --tpm2-device=list
+  register: tpm2_tpm_list
+  changed_when: false
+  check_mode: false
+
+- name: Assert that a TPM2 device is available
+  ansible.builtin.assert:
+    that:
+      - tpm2_tpm_list.rc == 0
+      - tpm2_tpm_list.stdout | trim | length > 0
+    success_msg: "systemd-cryptenroll detected a TPM2 device."
+    fail_msg: >-
+      {{ inventory_hostname }}: systemd-cryptenroll found no usable TPM2
+      device. Check firmware settings and /dev/tpmrm0.
+  changed_when: false
+  check_mode: false
+
+- name: Check crypttab for the root mapping
+  ansible.builtin.command:
+    argv:
+      - grep
+      - -F
+      - --
+      - "{{ tpm2_mapper_name }}"
+      - /etc/crypttab
+  register: tpm2_crypttab_entry
+  changed_when: false
+  check_mode: false
+  failed_when: false
+
+- name: Assert that the root mapping exists in crypttab
+  ansible.builtin.assert:
+    that:
+      - tpm2_crypttab_entry.rc == 0
+    success_msg: "Root mapping {{ tpm2_mapper_name }} is present in /etc/crypttab."
+    fail_msg: >-
+      {{ inventory_hostname }}: root mapping {{ tpm2_mapper_name }} was not
+      found in /etc/crypttab. The enrollment task cannot safely manage the
+      root unlock path without this entry.
+  changed_when: false
+  check_mode: false
+
+- name: Report missing link-volume-key when configured as a requirement
+  ansible.builtin.assert:
+    that:
+      - "'link-volume-key' in tpm2_crypttab_entry.stdout"
+    fail_msg: >-
+      {{ inventory_hostname }}: {{ tpm2_mapper_name }} is missing
+      link-volume-key in /etc/crypttab, but tpm2_require_link_volume_key is true.
+  when: tpm2_require_link_volume_key | default(false) | bool
+  changed_when: false
+  check_mode: false
+
+- name: Detect existing systemd TPM2 tokens
+  ansible.builtin.set_fact:
+    tpm2_existing_tokens: >-
+      {{ tpm2_luks_meta.tokens | default({}) | dict2items
+        | selectattr('value.type', 'defined')
+        | selectattr('value.type', 'equalto', 'systemd-tpm2')
+        | list }}
+  changed_when: false
+  check_mode: false
+
+- name: Set enrollment status
+  ansible.builtin.set_fact:
+    tpm2_already_enrolled: "{{ tpm2_existing_tokens | length > 0 }}"
+  changed_when: false
+  check_mode: false
+
+- name: Assert that a free LUKS2 keyslot exists for new enrollment
+  ansible.builtin.assert:
+    that:
+      - (tpm2_luks_meta.keyslots | default({}) | length) < 32
+    success_msg: "A LUKS2 keyslot is available for TPM2 enrollment."
+    fail_msg: >-
+      {{ inventory_hostname }}: all 32 LUKS2 keyslots are in use and no new
+      TPM2 credential can be enrolled.
+  when: not (tpm2_already_enrolled | bool)
+  changed_when: false
+  check_mode: false
+
+- name: Report existing TPM2 enrollment
+  ansible.builtin.debug:
+    msg: >-
+      A systemd TPM2 token already exists on {{ tpm2_device }}. The enrollment
+      task should compare its PCR policy with tpm2_pcrs before deciding whether
+      any change is required.
+  when: tpm2_already_enrolled | bool
+  changed_when: false
+  check_mode: false

@@ -1,10 +1,11 @@
 #! /usr/bin/env bash
 set -euo pipefail
 
+# !!! Read the README.md file to learn how to use the scripts in this directory !!!
 # !!! This script is meant to generate WG keys and set them in Ansible's host_vars folder for use in configuring WG. !!!
 # !!! It does not configure WG or should it be used for WG configuration changes, use Ansible instead. !!!
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INVENTORY_FILE="$SCRIPT_DIR/bash_inventory"
 HOST_VARS_DIR="$SCRIPT_DIR/../ansible/inventory/host_vars"
 VAULT_PASS="$SCRIPT_DIR/../vpass.txt"
@@ -23,6 +24,7 @@ if ! command -v ansible-vault > /dev/null 2>&1; then
 fi
 
 echo "[DEBUG] INVENTORY_FILE = $INVENTORY_FILE"
+echo "[DEBUG] HOST_VARS_DIR = $HOST_VARS_DIR"
 
 # Disable history to keep private keys out of userspace
 HISTFILE=/dev/null

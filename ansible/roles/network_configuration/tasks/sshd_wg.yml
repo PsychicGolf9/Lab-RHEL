@@ -36,6 +36,25 @@
 
 # === Deploy drop-in file based on lockdown_ssh variable being set in group_vars ===
 
+- name: Deploy sshd hardening drop-in when lockdown is enabled
+  ansible.builtin.copy:
+    content: |
+      PasswordAuthentication no
+      PermitRootLogin no
+    dest: /etc/ssh/sshd_config.d/98-auth.conf
+    owner: root
+    group: root
+    mode: '0600'
+  when: lockdown_ssh | bool
+  notify: reload sshd
+
+- name: Remove sshd hardening drop-in when lockdown is disabled
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d/98-auth.conf
+    state: absent
+  when: not lockdown_ssh | bool
+  notify: reload sshd
+
 - name: Deploy standard sshd listen drop-in when lockdown is disabled
   ansible.builtin.copy:
     content: |

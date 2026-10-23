@@ -18,3 +18,5 @@ base_pkg_install:
   - tpm2-tools
   - wireguard-tools
   - at
+
+my_test_var: hello

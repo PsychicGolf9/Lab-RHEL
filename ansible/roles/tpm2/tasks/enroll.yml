@@ -1,0 +1,289 @@
+- name: Assert TPM2 enrollment is enabled
+  ansible.builtin.assert:
+    that:
+      - tpm2_enabled | default(false) | bool
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2_enabled is false or undefined.
+      This task file must only be included for hosts that explicitly enable TPM2.
+  changed_when: false
+  check_mode: false
+
+- name: Assert recovery-key enrollment is not enabled without secure key handling
+  ansible.builtin.assert:
+    that:
+      - not (tpm2_recovery_key | default(false) | bool)
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2_recovery_key is enabled, but this task does not securely capture and vault the generated recovery key.
+      Keep it false until a recovery-key storage workflow has been implemented.
+  changed_when: false
+  check_mode: false
+
+- name: Assert TPM PIN enrollment is not enabled for this noninteractive task
+  ansible.builtin.assert:
+    that:
+      - not (tpm2_with_pin | default(false) | bool)
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2_with_pin is enabled, but this task has no
+      secure interactive PIN implementation.
+      Perform PIN enrollment separately or add an approved secret-input mechanism before enabling this option.
+  changed_when: false
+  check_mode: false
+
+- name: Build unique TPM2 enrollment target list
+  ansible.builtin.set_fact:
+    tpm2_targets: >-
+      {{ ([tpm2_device] + (tpm2_extra_devices | default([]))) | unique }}
+  changed_when: false
+  check_mode: false
+
+- name: Assert enrollment targets are defined
+  ansible.builtin.assert:
+    that:
+      - tpm2_targets | length > 0
+      - item is string
+      - item | length > 0
+    fail_msg: "{{ inventory_hostname }}: invalid TPM2 enrollment target {{ item | default('undefined') }}."
+  loop: "{{ tpm2_targets }}"
+  loop_control:
+    label: "{{ item }}"
+  changed_when: false
+  check_mode: false
+
+- name: Assert passphrase is available for new enrollment
+  ansible.builtin.assert:
+    that:
+      - tpm2luks_passphrase is defined
+      - tpm2luks_passphrase | string | length > 0
+    success_msg: "Passphrase available for TPM2 enrollment."
+    fail_msg: >-
+      {{ inventory_hostname }}: tpm2luks_passphrase is required to enroll a
+      TPM2 token but is undefined or empty. Run scripts/luks_passphrase.sh to
+      vault it into host_vars.
+  when: not ansible_check_mode
+  no_log: true
+  changed_when: false
+  check_mode: false
+
+- name: Read LUKS2 metadata for every enrollment target
+  ansible.builtin.command:
+    argv:
+      - cryptsetup
+      - luksDump
+      - --dump-json-metadata
+      - "{{ item }}"
+  register: tpm2_target_metadata
+  changed_when: false
+  check_mode: false
+  loop: "{{ tpm2_targets }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Assert metadata was readable for every enrollment target
+  ansible.builtin.assert:
+    that:
+      - item.rc == 0
+      - (item.stdout | from_json).format | default('') == 'luks2'
+    fail_msg: >-
+      {{ inventory_hostname }}: {{ item.item }} is not a readable LUKS2 device.
+      Enrollment is aborted before any target is modified.
+  loop: "{{ tpm2_target_metadata.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  changed_when: false
+  check_mode: false
+
+- name: Detect existing systemd TPM2 tokens for every target
+  ansible.builtin.set_fact:
+    tpm2_existing_target_tokens: >-
+      {{ (tpm2_existing_target_tokens | default([])) + [ {
+        'device': item.item,
+        'tokens': ((item.stdout | from_json).tokens | default({}) | dict2items
+          | selectattr('value.type', 'defined')
+          | selectattr('value.type', 'equalto', 'systemd-tpm2')
+          | list)
+      } ] }}
+  loop: "{{ tpm2_target_metadata.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  changed_when: false
+  check_mode: false
+
+- name: Refuse to alter an already enrolled target
+  ansible.builtin.assert:
+    that:
+      - item.tokens | length == 0
+    fail_msg: >-
+      {{ inventory_hostname }}: a systemd-tpm2 token already exists on {{ item.device }}.
+      The enrollment task will not assume that its PCR policy matches tpm2_pcrs={{ tpm2_pcrs }}.
+      Use a deliberate wipe-and-re-enroll procedure if the existing policy must be changed.
+  loop: "{{ tpm2_existing_target_tokens }}"
+  loop_control:
+    label: "{{ item.device }}"
+  when: not ansible_check_mode
+  changed_when: false
+  check_mode: false
+
+- name: Build list of targets requiring enrollment
+  ansible.builtin.set_fact:
+    tpm2_targets_to_enroll: >-
+      {{ tpm2_existing_target_tokens
+        | rejectattr('tokens', 'length')
+        | map(attribute='device')
+        | list }}
+  changed_when: false
+  check_mode: false
+
+- name: Report targets that are already enrolled
+  ansible.builtin.debug:
+    msg: "{{ item.device }} already contains a systemd-tpm2 token; no enrollment required."
+  loop: "{{ tpm2_existing_target_tokens }}"
+  loop_control:
+    label: "{{ item.device }}"
+  when:
+    - item.tokens | length > 0
+    - not ansible_check_mode
+  changed_when: false
+  check_mode: false
+
+- name: Assert a recovery passphrase keyslot exists on each new target
+  ansible.builtin.assert:
+    that:
+      - >-
+        (((tpm2_target_metadata.results
+          | selectattr('item', 'equalto', item)
+          | first).stdout | from_json).keyslots | default({}) | dict2items
+          | selectattr('value.kdf', 'defined') | list | length) > 0
+    fail_msg: >-
+      {{ inventory_hostname }}: {{ item }} has no passphrase-capable LUKS2
+      keyslot. Enrollment is aborted because manual recovery must remain
+      available.
+  loop: "{{ tpm2_targets_to_enroll }}"
+  loop_control:
+    label: "{{ item }}"
+  when: not ansible_check_mode
+  changed_when: false
+  check_mode: false
+
+- name: Assert a free LUKS2 keyslot exists on each new target
+  ansible.builtin.assert:
+    that:
+      - >-
+        (((tpm2_target_metadata.results
+          | selectattr('item', 'equalto', item)
+          | first).stdout | from_json).keyslots | default({}) | length) < 32
+    fail_msg: >-
+      {{ inventory_hostname }}: all 32 LUKS2 keyslots are in use on {{ item }}.
+      No TPM2 credential can be enrolled.
+  loop: "{{ tpm2_targets_to_enroll }}"
+  loop_control:
+    label: "{{ item }}"
+  when: not ansible_check_mode
+  changed_when: false
+  check_mode: false
+
+- name: Enroll TPM2 token on each new LUKS2 target
+  ansible.builtin.command:
+    argv:
+      - systemd-cryptenroll
+      - --unlock-key-file=-
+      - --tpm2-device=auto
+      - "--tpm2-pcrs={{ tpm2_pcrs }}"
+      - "{{ item }}"
+    stdin: "{{ tpm2luks_passphrase }}"
+    stdin_add_newline: false
+  register: tpm2_enroll_result
+  no_log: true
+  changed_when: tpm2_enroll_result.rc == 0
+  failed_when: tpm2_enroll_result.rc != 0
+  loop: "{{ tpm2_targets_to_enroll }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+    - not ansible_check_mode
+    - tpm2_targets_to_enroll | length > 0
+
+- name: Re-read LUKS2 metadata after enrollment
+  ansible.builtin.command:
+    argv:
+      - cryptsetup
+      - luksDump
+      - --dump-json-metadata
+      - "{{ item }}"
+  register: tpm2_post_enroll_dump
+  changed_when: false
+  check_mode: false
+  loop: "{{ tpm2_targets_to_enroll }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+    - not ansible_check_mode
+    - tpm2_targets_to_enroll | length > 0
+
+- name: Assert a systemd TPM2 token was written successfully
+  vars:
+    post_meta: "{{ item.stdout | from_json }}"
+    tpm_tokens: >-
+      {{ post_meta.tokens | default({}) | dict2items
+        | selectattr('value.type', 'defined')
+        | selectattr('value.type', 'equalto', 'systemd-tpm2')
+        | list }}
+  ansible.builtin.assert:
+    that:
+      - item.rc == 0
+      - tpm_tokens | length > 0
+    success_msg: "TPM2 token confirmed on {{ item.item }}."
+    fail_msg: >-
+      {{ inventory_hostname }}: systemd-cryptenroll completed on {{ item.item }}
+      but no systemd-tpm2 token exists in the LUKS2 header.
+  loop: "{{ tpm2_post_enroll_dump.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - not ansible_check_mode
+    - tpm2_targets_to_enroll | length > 0
+  changed_when: false
+  check_mode: false
+
+- name: Assert the passphrase keyslot survived enrollment
+  vars:
+    post_meta: "{{ item.stdout | from_json }}"
+    passphrase_slots: >-
+      {{ post_meta.keyslots | default({}) | dict2items
+        | selectattr('value.kdf', 'defined')
+        | list }}
+  ansible.builtin.assert:
+    that:
+      - passphrase_slots | length > 0
+    success_msg: "Passphrase recovery keyslot preserved on {{ item.item }}."
+    fail_msg: >-
+      {{ inventory_hostname }}: no passphrase-capable keyslot remains on
+      {{ item.item }} after TPM2 enrollment. Do not reboot; investigate or
+      restore the LUKS header from a verified backup.
+  loop: "{{ tpm2_post_enroll_dump.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - not ansible_check_mode
+    - tpm2_targets_to_enroll | length > 0
+  changed_when: false
+  check_mode: false
+
+- name: Report enrollment targets requiring the initrd task
+  ansible.builtin.debug:
+    msg: >-
+      TPM2 enrollment completed for {{ tpm2_targets_to_enroll | join(', ') }}.
+      Continue with initrd.yml to update the initramfs before reboot testing.
+  when:
+    - not ansible_check_mode
+    - tpm2_targets_to_enroll | length > 0
+  changed_when: false
+  check_mode: false
+
+- name: Report check-mode behavior
+  ansible.builtin.debug:
+    msg: >-
+      Check mode performed validation only.
+      TPM2 enrollment was not attempted.
+  when: ansible_check_mode
+  changed_when: false
+  check_mode: false

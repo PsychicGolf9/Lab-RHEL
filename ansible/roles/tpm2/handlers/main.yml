@@ -1,0 +1,23 @@
+- name: Regenerate initramfs for all kernels
+  ansible.builtin.command:
+    argv:
+      - dracut
+      - --regenerate-all
+      - --force
+  changed_when: true
+  listen: regenerate all
+
+- name: Regenerate initramfs for current kernel
+  ansible.builtin.command:
+    argv:
+      - dracut
+      - --force
+  changed_when: true
+  listen: regenerate current
+
+# This handler is meant for debugging live systems without rebooting only. Don't use this under normal circumstances.
+- name: Restart systemd-cryptsetup
+  ansible.builtin.service:
+    name: systemd-cryptsetup
+    state: restarted
+  when: false

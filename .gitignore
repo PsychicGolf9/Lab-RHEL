@@ -2,3 +2,4 @@ redact-values.txt
 sanitize-logs.sh
 RHEL-Lab.code-workspace
 vpass.txt
+ansible/.vscode/

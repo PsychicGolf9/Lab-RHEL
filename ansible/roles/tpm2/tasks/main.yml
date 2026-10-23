@@ -1,0 +1,44 @@
+- name: Report skipping TPM2 role
+  ansible.builtin.debug:
+    msg: >-
+      {{ inventory_hostname }}: tpm2_enabled is false or undefined.
+      This role will be skipped unless tpm2_enabled is set to true in host_vars files.
+  when: not (tpm2_enabled | default(false) | bool)
+  changed_when: false
+  check_mode: false
+
+- name: Execute TPM tasks
+  when: tpm2_enabled | default(false) | bool
+  block:
+    - name: Preflight checks
+      ansible.builtin.import_tasks:
+        preflight.yml
+      tags: [tpm2, preflight]
+
+    - name: Flush handlers after preflight
+      ansible.builtin.meta:
+        flush_handlers
+
+    - name: Enrollment
+      ansible.builtin.import_tasks:
+        enroll.yml
+      tags: [tpm2, enroll]
+
+    - name: Handle initramfs
+      ansible.builtin.import_tasks:
+        initrd.yml
+      tags: [tpm2, initrd]
+
+    - name: Flush handlers after role completion
+      ansible.builtin.meta:
+        flush_handlers
+
+    - name: Notify status and that reboot is required
+      ansible.builtin.debug:
+        msg: >-
+          {{ inventory_hostname }}: TPM enrollment complete.
+          Device is {{ tpm2_device }}, PCR policy is {{ tpm2_pcrs }}.
+          Reboot IS REQUIRED.
+          Make sure you have console access for recovery.
+      changed_when: false
+      check_mode: false
