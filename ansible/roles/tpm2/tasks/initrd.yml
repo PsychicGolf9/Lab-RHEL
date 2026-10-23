@@ -29,7 +29,7 @@
     argv:
       - grubby
       - --update-kernel=ALL
-      - --args="rd.luks.options=tpm2-device=auto"
+      - --args=rd.luks.options=tpm2-device=auto
   when: "'rd.luks.options=tpm2-device=auto' not in tpm2_grubby_info.stdout"
   notify: regenerate all
   changed_when: true
@@ -55,7 +55,7 @@
   ansible.builtin.debug:
     msg: >-
       {{ inventory_hostname }}: TPM configuration complete.
-      Initramfs regenerated.
+      Initramfs will be regenerated when handler executes.
       A reboot is required to test automatic unlocking.
       DO NOT reboot until you have console access.
   changed_when: false

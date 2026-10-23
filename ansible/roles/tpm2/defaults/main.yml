@@ -2,4 +2,3 @@ tpm2_enabled: false
 tpm2_pcrs: "7"
 tpm2_recovery_key: false
 tpm2_extra_devices: []
-tpm2_initrd_kernels: "current" # Set this to "all" if you don't mind extra reboots for compatibility.
