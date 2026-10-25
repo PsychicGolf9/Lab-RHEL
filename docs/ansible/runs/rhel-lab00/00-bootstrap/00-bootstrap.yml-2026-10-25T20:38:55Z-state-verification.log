@@ -1,0 +1,11 @@
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active SERVICE'
+UTC start: 2026-10-25T20:38:55Z
+Repository commit: 2b06049
+Playbook: playbooks/00-bootstrap.yml
+Verification Metadata: /home/Dusty/Projects/RHEL/RHEL-Lab/docs/ansible/verification/00-bootstrap.services
+Services configured for verification: (none)
+
+--- SERVICE STATE ---
+No services configured; service verification skipped.
+
+--- VERIFICATION EXIT STATUS: 0 ---

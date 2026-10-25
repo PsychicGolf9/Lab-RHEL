@@ -1,0 +1,43 @@
+$ ansible-playbook playbooks/00-bootstrap.yml -K -k --limit rhel-lab00
+Phase: second
+UTC start: 2026-10-25T20:38:55Z
+Repository commit: 2b06049
+Playbook: playbooks/00-bootstrap.yml
+Verification Metadata: /home/Dusty/Projects/RHEL/RHEL-Lab/docs/ansible/verification/00-bootstrap.services
+Services configured for verification: (none)
+Ansible: ansible [core 2.21.5]
+
+--- PLAYBOOK OUTPUT ---
+
+PLAY [Bootstrap fresh install to set up user for Ansible] **********************
+
+TASK [Gathering Facts] *********************************************************
+ok: [rhel-lab00]
+
+TASK [wg_check : Check if WireGuard is up] *************************************
+ok: [rhel-lab00 -> localhost]
+
+TASK [wg_check : Fallback to IPv4 if down] *************************************
+skipping: [rhel-lab00]
+
+TASK [wg_check : Manually gather facts after correct IP is set] ****************
+ok: [rhel-lab00]
+
+TASK [user_a : Create Ansible control user] ************************************
+ok: [rhel-lab00]
+
+TASK [user_a : Install Ansible's SSH ansible_pubkey] ***************************
+ok: [rhel-lab00]
+
+TASK [user_a : Configure passwordless escalation for Ansible] ******************
+ok: [rhel-lab00]
+
+TASK [user_a : Sudo test] ******************************************************
+ok: [rhel-lab00]
+
+PLAY RECAP *********************************************************************
+rhel-lab00                 : ok=7    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
+
+--- EXIT STATUS: 0 ---
+Playbook result: PASS

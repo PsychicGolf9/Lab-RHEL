@@ -43,7 +43,7 @@
 - name: Assert dracut config was deployed successfully
   ansible.builtin.assert:
     that:
-      - tpm2_dracut_stat.stat exists
+      - tpm2_dracut_stat.stat.exists
       - tpm2_dracut_stat.stat.mode == '0600'
     success_msg: "Dracut configuration verified at {{ tpm2_dracut_stat.stat.path }}"
     fail_msg: >-

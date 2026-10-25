@@ -1,0 +1,23 @@
+$ ansible-playbook playbooks/00-bootstrap.yml --limit rhel-lab00
+Phase: first
+UTC start: 2026-10-25T18:57:10Z
+Repository commit: 2b06049
+Playbook: playbooks/00-bootstrap.yml
+Verification Metadata: /home/Dusty/Projects/RHEL/RHEL-Lab/docs/ansible/verification/00-bootstrap.services
+Services configured for verification: (none)
+Ansible: ansible [core 2.21.5]
+
+--- PLAYBOOK OUTPUT ---
+
+PLAY [Bootstrap fresh install to set up user for Ansible] **********************
+
+TASK [Gathering Facts] *********************************************************
+[ERROR]: Task failed: Failed to connect to the host via ssh: ssh: connect to host 192.168.122.30 port 22: Connection timed out
+fatal: [rhel-lab00]: UNREACHABLE! => {"changed": false, "msg": "Task failed: Failed to connect to the host via ssh: ssh: connect to host 192.168.122.30 port 22: Connection timed out", "unreachable": true}
+
+PLAY RECAP *********************************************************************
+rhel-lab00                 : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+--- EXIT STATUS: 4 ---
+Playbook result: FAIL

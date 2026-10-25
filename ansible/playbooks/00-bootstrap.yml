@@ -4,8 +4,6 @@
 
   vars:
     ansible_user: "{{ admin_user }}"
-    ansible_host: "{{ ansible_host_inet }}"
-
   #
   #
   # !!!!!!! MAKE SURE TO RUN THIS PLAY WITH THE -Kk FLAG SO ANSIBLE PROMPTS FOR THE SUDO AND SSH PASSWORDS !!!!!!!
@@ -13,4 +11,5 @@
   #
 
   roles:
+    - wg_check
     - user_a

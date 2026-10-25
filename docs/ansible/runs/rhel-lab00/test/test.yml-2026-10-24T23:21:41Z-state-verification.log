@@ -1,0 +1,10 @@
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active SERVICE'
+UTC start: 2026-10-24T23:21:41Z
+Repository commit: 2b06049
+Playbook: playbooks/test.yml
+Services configured for verification: (none)
+
+--- SERVICE STATE ---
+No services configured; service verification skipped.
+
+--- VERIFICATION EXIT STATUS: 0 ---
