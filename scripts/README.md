@@ -18,7 +18,7 @@ The scripts expect the following repository layout:
 └── scripts/
     ├── bash_inventory
     ├── wg_setup.sh
-    └── vault-luks-passphrase.sh
+    └── luks_passphrase.sh
 ```
 
 The scripts resolve these paths relative to their own directory, so they can
@@ -147,7 +147,7 @@ The optional mode below uses one LUKS passphrase for every selected host that
 does not already contain a vaulted passphrase:
 
 ```bash
-./luks-passphrase.sh --single-password
+./luks_passphrase.sh --single-password
 ```
 
 This creates a shared secret across those hosts. Anyone who obtains

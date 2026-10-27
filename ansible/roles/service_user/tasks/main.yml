@@ -30,6 +30,6 @@
   become_user: ansible
   ansible.builtin.command:
     sudo -n whoami
-  register: user_a_sudo_test
+  register: service_user_sudo_test
   changed_when: false
-  failed_when: user_a_sudo_test.stdout != 'root'
+  failed_when: service_user_sudo_test.stdout != 'root'

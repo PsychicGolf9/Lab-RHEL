@@ -44,7 +44,6 @@ OPTIONS:
   -h, --help             Show this help message.
 
 Examples:
-  $(basename "$0") rhel-lab00 full
   $(basename "$0") --playbook playbooks/test.yml rhel-lab00 full
   $(basename "$0") --playbook playbooks/test.yml --flags -Kk rhel-lab00 full
   $(basename "$0") --no-services rhel-lab00 full

@@ -35,15 +35,6 @@
     state: enabled
   notify: reload firewalld
 
-- name: Enable forwarding in Drop
-  ansible.posix.firewalld:
-    zone: drop
-    forward: true
-    permanent: true
-    immediate: false
-    state: enabled
-  notify: reload firewalld
-
 - name: Assign wg0 to management zone
   ansible.posix.firewalld:
     zone: "{{ wg_zone | default('public', true) }}"
@@ -79,15 +70,17 @@
 
 - name: Verify wg0 is up
   ansible.builtin.command:
-    ip -br addr show wg0
+    ip -o link show wg0
   changed_when: false
+  failed_when: false
   check_mode: false
   register: network_configuration_wg0_status
 
 - name: Abort if wg0 isn't up
   ansible.builtin.assert:
     that:
-      "'UP' in network_configuration_wg0_status.stdout"
+      - "network_configuration_wg0_status.rc == 0"
+      - "network_configuration_wg0_status.stdout is search('[<,]UP[,>]')"
     fail_msg: |-
       {{ inventory_hostname }}: wg0 is not up.
       Firewalld reload FAILED: Tunnel must be active before applying this config.
@@ -95,8 +88,11 @@
     quiet: true
 
 - name: Verify SSH is permitted in wg0 zone
-  ansible.builtin.command:
-    "firewall-cmd --zone={{ wg_zone | default('public', true) }} --list-services | grep -W ssh"
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      firewall-cmd --zone={{ wg_zone | default('public', true) }} --list-services | grep -w ssh
+    executable: /bin/bash
   changed_when: false
   check_mode: false
   register: network_configuration_wg_ssh_check

@@ -3,7 +3,7 @@ Phase: first
 UTC start: 2026-10-25T20:38:55Z
 Repository commit: 2b06049
 Playbook: playbooks/00-bootstrap.yml
-Verification Metadata: /home/Dusty/Projects/RHEL/RHEL-Lab/docs/ansible/verification/00-bootstrap.services
+Verification Metadata: <repo>/docs/ansible/verification/00-bootstrap.services
 Services configured for verification: (none)
 Ansible: ansible [core 2.21.5]
 

@@ -1,42 +1,33 @@
-- name: Connect, install, and configure base packages, WireGuard, and Firewalld
+- name: Configure Firewalld and restrict SSH
   hosts: servers
-  gather_facts: false
-
-  roles:
-    - wg_check
-    - base_pkg_install
-    - validate_vars
+  gather_facts: true
+  become: true
 
   tasks:
+    # Optional for wireless systems. Set by {{ network_connection_type: }}
+    # in host_vars. Solves some intermittent disconnect issues.
     - name: Set WiFi powersave to off
       ansible.builtin.include_role:
         name: network_configuration
         tasks_from: wifi_powersave
-
-    - name: Configure WireGuard
-      ansible.builtin.include_role:
-        name: network_configuration
-        tasks_from: wireguard
+      when: network_connection_type | default('wired') == 'wireless'
 
     - name: Configure Firewalld
       ansible.builtin.include_role:
         name: network_configuration
         tasks_from: firewalld
 
-- name: Harden SSH to listen only over WG address
-  hosts: servers
-  gather_facts: true
-
-  tasks:
     - name: Harden SSH
       ansible.builtin.include_role:
         name: network_configuration
         tasks_from: sshd_wg
 
-# !!! This only runs if tpm2_enabled is set to true. Make sure to run luks_passphrase.sh before you run this play if you enable TPM.
+# !!! This play only runs if tpm2_enabled is set to true. Make sure to run
+        # luks_passphrase.sh before you run this play if you enable TPM.
 - name: Preflight checks, enroll, and regen initramfs
   hosts: servers
   gather_facts: true
+  become: true
 
   roles:
     - tpm2

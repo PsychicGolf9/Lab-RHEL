@@ -1,16 +1,21 @@
+# !!! This task is only intended to be used during 00-bootstrap.yml
+# It doesn't do anything once SSH is restricted to the WG tunnel.
+# see docs/adr/lan_shoehorn.md for details.
+
 - name: Check if WireGuard is up
   delegate_to: localhost
+  become: false
   ansible.builtin.wait_for:
     host: "{{ ansible_host }}"
     port: 22
     timeout: 2
-  register: wg_check_result
+  register: lan_shoehorn_result
   ignore_errors: true
 
 - name: Fallback to IPv4 if down
   ansible.builtin.set_fact:
     ansible_host: "{{ ansible_host_inet }}"
-  when: wg_check_result is failed
+  when: lan_shoehorn_result is failed
 
 - name: Manually gather facts after correct IP is set
   ansible.builtin.setup:

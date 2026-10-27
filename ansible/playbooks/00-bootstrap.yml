@@ -1,6 +1,7 @@
-- name: Bootstrap fresh install to set up user for Ansible
+- name: Bootstrap fresh install with packages, service user, and WireGuard
   hosts: servers
-  gather_facts: true
+  gather_facts: false
+  become: true
 
   vars:
     ansible_user: "{{ admin_user }}"
@@ -11,5 +12,13 @@
   #
 
   roles:
-    - wg_check
-    - user_a
+    - lan_shoehorn
+    - service_user
+    - base_pkg_install 
+
+  tasks:
+
+    - name: Configure WireGuard
+      ansible.builtin.include_role:
+        name: network_configuration
+        tasks_from: wireguard

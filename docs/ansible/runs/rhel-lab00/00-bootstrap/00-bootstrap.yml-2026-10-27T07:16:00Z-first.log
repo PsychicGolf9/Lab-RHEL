@@ -1,0 +1,55 @@
+$ ansible-playbook playbooks/00-bootstrap.yml -K -k --limit rhel-lab00
+Phase: first
+UTC start: 2026-10-27T07:16:00Z
+Repository commit: 42d4be2
+Playbook: playbooks/00-bootstrap.yml
+Verification Metadata: <repo>/docs/ansible/verification/00-bootstrap.services
+Services configured for verification: (none)
+Ansible: ansible [core 2.21.5]
+
+--- PLAYBOOK OUTPUT ---
+
+PLAY [Bootstrap fresh install with packages, service user, and WireGuard] ******
+
+TASK [lan_shoehorn : Check if WireGuard is up] *********************************
+ok: [rhel-lab00 -> localhost]
+
+TASK [lan_shoehorn : Fallback to IPv4 if down] *********************************
+skipping: [rhel-lab00]
+
+TASK [lan_shoehorn : Manually gather facts after correct IP is set] ************
+ok: [rhel-lab00]
+
+TASK [service_user : Create Ansible control user] ******************************
+ok: [rhel-lab00]
+
+TASK [service_user : Install Ansible's SSH ansible_pubkey] *********************
+ok: [rhel-lab00]
+
+TASK [service_user : Configure passwordless escalation for Ansible] ************
+ok: [rhel-lab00]
+
+TASK [service_user : Sudo test] ************************************************
+ok: [rhel-lab00]
+
+TASK [base_pkg_install : Install required packages] ****************************
+ok: [rhel-lab00]
+
+TASK [Configure WireGuard] *****************************************************
+included: network_configuration for rhel-lab00
+
+TASK [network_configuration : Establish WireGuard server config] ***************
+changed: [rhel-lab00]
+
+TASK [network_configuration : Enable and start WireGuard] **********************
+ok: [rhel-lab00]
+
+RUNNING HANDLER [network_configuration : Restart wg-quick] *********************
+changed: [rhel-lab00]
+
+PLAY RECAP *********************************************************************
+rhel-lab00                 : ok=11   changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
+
+--- EXIT STATUS: 0 ---
+Playbook result: PASS

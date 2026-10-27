@@ -1,0 +1,26 @@
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active SERVICE'
+UTC start: 2026-10-27T08:24:58Z
+Repository commit: 42d4be2
+Playbook: playbooks/01-base.yml
+Verification Metadata: <repo>/docs/ansible/verification/01-base.services
+Services configured for verification: NetworkManager wg-quick@wg0 sshd firewalld
+
+--- SERVICE STATE ---
+
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active NetworkManager'
+rhel-lab00 | CHANGED | rc=0 >>
+active
+
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active wg-quick@wg0'
+rhel-lab00 | CHANGED | rc=0 >>
+active
+
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active sshd'
+rhel-lab00 | CHANGED | rc=0 >>
+active
+
+$ ansible rhel-lab00 -b -m command -a 'systemctl is-active firewalld'
+rhel-lab00 | CHANGED | rc=0 >>
+active
+
+--- VERIFICATION EXIT STATUS: 0 ---

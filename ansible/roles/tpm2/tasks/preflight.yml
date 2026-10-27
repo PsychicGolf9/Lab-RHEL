@@ -81,12 +81,6 @@
   changed_when: false
   check_mode: false
 
-- name: Set the root mapper name
-  ansible.builtin.set_fact:
-    tpm2_mapper_name: "{{ tpm2_root_source.stdout | trim | regex_replace('^/dev/mapper/', '') }}"
-  changed_when: false
-  check_mode: false
-
 - name: Discover the LUKS ancestor of the root mapper
   ansible.builtin.shell: |
     set -o pipefail
@@ -151,7 +145,9 @@
   ansible.builtin.assert:
     that:
       - tpm2_is_luks.rc == 0
-      - tpm2_luks_meta.format | default('') == 'luks2'
+      - tpm2_luks_json.rc == 0
+      - tpm2_luks_meta.keyslots is defined
+      - tpm2_luks_meta.segments is defined
     success_msg: "{{ tpm2_device }} is a LUKS2 container."
     fail_msg: >-
       {{ inventory_hostname }}: {{ tpm2_device }} is not a readable LUKS2
@@ -238,7 +234,7 @@
       - grep
       - -F
       - --
-      - "{{ tpm2_mapper_name }}"
+      - "{{ tpm2_uuid }}"
       - /etc/crypttab
   register: tpm2_crypttab_entry
   changed_when: false
@@ -249,11 +245,11 @@
   ansible.builtin.assert:
     that:
       - tpm2_crypttab_entry.rc == 0
-    success_msg: "Root mapping {{ tpm2_mapper_name }} is present in /etc/crypttab."
+    success_msg: "Root mapping {{ tpm2_uuid }} is present in /etc/crypttab."
     fail_msg: >-
-      {{ inventory_hostname }}: root mapping {{ tpm2_mapper_name }} was not
-      found in /etc/crypttab. The enrollment task cannot safely manage the
-      root unlock path without this entry.
+      {{ inventory_hostname }}: root mapping {{ tpm2_uuid }} ({tpm2_device})
+      was not found in /etc/crypttab. The enrollment task cannot safely manage
+      the root unlock path without this entry.
   changed_when: false
   check_mode: false
 

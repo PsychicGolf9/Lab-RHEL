@@ -1,6 +1,6 @@
 #jinja2: keep_trailing_newline: True
 [Interface]
-Address = {{ ansible_host }}/32
+Address = {{ ansible_host_wg }}/32
 PrivateKey = {{ network_configuration_wg_private_key }}
 ListenPort = {{ wg_port }}
 

@@ -8,17 +8,17 @@
   ansible.builtin.assert:
     that:
       - network_configuration_admin_authkeys_raw.content is defined
-      - item in (network_configuration_admin_authkeys_raw.content | b64decode)
+      - admin_ssh_pubkey.split()[1] in (network_configuration_admin_authkeys_raw.content | b64decode)
     fail_msg: |-
-      {{ inventory_hostname }}: Admin key '{{ item.split(' ')[1][:20] }}...' not found in '{{ admin_user }}'\'s authorized keys.
+      {{ inventory_hostname }}: Admin key '{{ admin_ssh_pubkey.split()[1][:20] }}...' not found in '{{ admin_user }}'\'s authorized keys.
       Make sure to enroll '{{ admin_user }}'\'s keys with the node and run again. This task will not lock SSH to a WireGuard tunnel until you do.
     quiet: true
-  loop: "{{ admin_ssh_pubkeys }}"
 
 - name: Check control node can reach this host over WG
   delegate_to: localhost
+  become: false
   ansible.builtin.command:
-    ping -c 1 -W 2 {{ ansible_host }}
+    ping -c 1 -W 2 {{ ansible_host_wg }}
   register: network_configuration_wg_ping
   changed_when: false
   failed_when: false
@@ -28,7 +28,7 @@
     that:
       - network_configuration_wg_ping.rc == 0
     fail_msg: |-
-      {{ inventory_hostname }}: Control node cannot reach {{ ansible_host }} over WireGuard tunnel.
+      {{ inventory_hostname }}: Control node cannot reach {{ ansible_host_wg }} over WireGuard tunnel.
       Configuring SSH to only listen over a WireGuard IP will result in a lockout.
       Ensure your WireGuard configuration is correct and try again... This task will not complete until you do so.
     quiet: true
@@ -76,7 +76,7 @@
 - name: Deploy WG sshd listen drop-in when lockdown is enabled
   ansible.builtin.copy:
     content: |
-      ListenAddress {{ ansible_host }}
+      ListenAddress {{ ansible_host_wg }}
     dest: /etc/ssh/sshd_config.d/99-wireguard.conf
     owner: root
     group: root

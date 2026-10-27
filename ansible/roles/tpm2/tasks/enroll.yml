@@ -73,6 +73,7 @@
       - "{{ item }}"
   register: tpm2_target_metadata
   changed_when: false
+  failed_when: false
   check_mode: false
   loop: "{{ tpm2_targets }}"
   loop_control:
@@ -82,7 +83,8 @@
   ansible.builtin.assert:
     that:
       - item.rc == 0
-      - (item.stdout | from_json).format | default('') == 'luks2'
+      - (item.stdout | from_json).keyslots is defined
+      - (item.stdout | from_json).segments is defined
     fail_msg: >-
       {{ inventory_hostname }}: {{ item.item }} is not a readable LUKS2 device.
       Enrollment is aborted before any target is modified.
@@ -97,11 +99,20 @@
     tpm2_existing_target_tokens: >-
       {{ (tpm2_existing_target_tokens | default([])) + [ {
         'device': item.item,
-        'tokens': ((item.stdout | from_json).tokens | default({}) | dict2items
-          | selectattr('value.type', 'defined')
-          | selectattr('value.type', 'equalto', 'systemd-tpm2')
-          | list)
+        'tokens': (tpm2_target_token_items),
+        'pcrs': (tpm2_target_token_items
+          | map(attribute='value.tpm2-pcrs')
+          | select('defined')
+          | flatten
+          | unique
+          | sort)
       } ] }}
+  vars:
+    tpm2_target_token_items: >-
+      {{ (item.stdout | from_json).tokens | default({}) | dict2items
+        | selectattr('value.type', 'defined')
+        | selectattr('value.type', 'equalto', 'systemd-tpm2')
+        | list }}
   loop: "{{ tpm2_target_metadata.results }}"
   loop_control:
     label: "{{ item.item }}"
@@ -111,7 +122,12 @@
 - name: Refuse to alter an already enrolled target
   ansible.builtin.assert:
     that:
-      - item.tokens | length == 0
+      - >-
+        item.tokens | length == 0 or
+        (
+          item.pcrs | length == (tpm2_pcrs | split('+') | map('int') | length) and
+          (item.pcrs | difference(tpm2_pcrs | split('+') | map('int'))) | length == 0
+        )
     fail_msg: >-
       {{ inventory_hostname }}: a systemd-tpm2 token already exists on {{ item.device }}.
       The enrollment task will not assume that its PCR policy matches tpm2_pcrs={{ tpm2_pcrs }}.
@@ -127,7 +143,7 @@
   ansible.builtin.set_fact:
     tpm2_targets_to_enroll: >-
       {{ tpm2_existing_target_tokens
-        | rejectattr('tokens', 'length')
+        | selectattr('tokens', 'equalto', [])
         | map(attribute='device')
         | list }}
   changed_when: false
@@ -135,12 +151,16 @@
 
 - name: Report targets that are already enrolled
   ansible.builtin.debug:
-    msg: "{{ item.device }} already contains a systemd-tpm2 token; no enrollment required."
+    msg: >-
+      {{ item.device }} is already enrolled with the requested systemd-tpm2
+      PCR policy ({{ tpm2_pcrs }}); no enrollment required.
   loop: "{{ tpm2_existing_target_tokens }}"
   loop_control:
     label: "{{ item.device }}"
   when:
     - item.tokens | length > 0
+    - item.pcrs | length == (tpm2_pcrs | split('+') | map('int') | length)
+    - (item.pcrs | difference(tpm2_pcrs | split('+') | map('int'))) | length == 0
     - not ansible_check_mode
   changed_when: false
   check_mode: false
@@ -193,7 +213,7 @@
     stdin_add_newline: false
   register: tpm2_enroll_result
   no_log: true
-  changed_when: tpm2_enroll_result.rc == 0
+  changed_when: true
   failed_when: tpm2_enroll_result.rc != 0
   loop: "{{ tpm2_targets_to_enroll }}"
   loop_control:

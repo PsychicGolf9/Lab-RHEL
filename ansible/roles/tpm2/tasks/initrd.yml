@@ -36,7 +36,7 @@
 
 - name: Verify dracut file exists and is readable
   ansible.builtin.stat:
-    path: /etc/dracut.conf.d/90-tpm.conf
+    path: /etc/dracut.conf.d/90-tpm2.conf
   register: tpm2_dracut_stat
   changed_when: false
 
@@ -45,7 +45,7 @@
     that:
       - tpm2_dracut_stat.stat.exists
       - tpm2_dracut_stat.stat.mode == '0600'
-    success_msg: "Dracut configuration verified at {{ tpm2_dracut_stat.stat.path }}"
+    success_msg: "Dracut configuration verified at /etc/dracut.conf.d/90-tpm2.conf"
     fail_msg: >-
       {{ inventory_hostname }}: Dracut configuration file failed to deploy or has incorrect permissions.
       Initramfs will not be regenerated.

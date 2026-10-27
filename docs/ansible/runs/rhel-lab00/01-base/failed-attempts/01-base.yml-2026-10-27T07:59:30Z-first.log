@@ -1,0 +1,501 @@
+$ ansible-playbook playbooks/01-base.yml  --limit rhel-lab00
+Phase: first
+UTC start: 2026-10-27T07:59:30Z
+Repository commit: 42d4be2
+Playbook: playbooks/01-base.yml
+Verification Metadata: <repo>/docs/ansible/verification/01-base.services
+Services configured for verification: NetworkManager wg-quick@wg0 sshd firewalld
+Ansible: ansible [core 2.21.5]
+
+--- PLAYBOOK OUTPUT ---
+
+PLAY [Configure Firewalld and restrict SSH] ************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [rhel-lab00]
+
+TASK [Set WiFi powersave to off] ***********************************************
+skipping: [rhel-lab00]
+
+TASK [Configure Firewalld] *****************************************************
+included: network_configuration for rhel-lab00
+
+TASK [network_configuration : Ensure firewalld is running and enabled] *********
+ok: [rhel-lab00]
+
+TASK [network_configuration : Check current default zone] **********************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Set default zone to drop] ************************
+skipping: [rhel-lab00]
+
+TASK [network_configuration : Assign LAN interface to Drop] ********************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Allow WG handshake] ******************************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Assign wg0 to management zone] *******************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Remove unwanted services from wg0 zone] **********
+ok: [rhel-lab00] => (item=cockpit)
+ok: [rhel-lab00] => (item=dhcpv6-client)
+ok: [rhel-lab00] => (item=mdns)
+
+TASK [network_configuration : Allow SSH over wg0] ******************************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Verify wg0 is up] ********************************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Abort if wg0 isn't up] ***************************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Verify SSH is permitted in wg0 zone] *************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Abort if SSH not in wg0 zone] ********************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Apply changes] ***********************************
+
+TASK [Harden SSH] **************************************************************
+included: network_configuration for rhel-lab00
+
+TASK [network_configuration : Read admin authorized_keys] **********************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Verify each admin key is enrolled] ***************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Check control node can reach this host over WG] ***
+ok: [rhel-lab00 -> localhost]
+
+TASK [network_configuration : Abort if WG tunnel is down] **********************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Deploy sshd hardening drop-in when lockdown is enabled] ***
+ok: [rhel-lab00]
+
+TASK [network_configuration : Remove sshd hardening drop-in when lockdown is disabled] ***
+skipping: [rhel-lab00]
+
+TASK [network_configuration : Deploy standard sshd listen drop-in when lockdown is disabled] ***
+skipping: [rhel-lab00]
+
+TASK [network_configuration : Remove standard listen drop-in when lockdown is enabled] ***
+ok: [rhel-lab00]
+
+TASK [network_configuration : Deploy WG sshd listen drop-in when lockdown is enabled] ***
+ok: [rhel-lab00]
+
+TASK [network_configuration : Remove WG sshd listen drop-in when lockdown is disabled] ***
+skipping: [rhel-lab00]
+
+TASK [network_configuration : Read sshd configuration] *************************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Abort if permissive auth remains after hardening step] ***
+ok: [rhel-lab00]
+
+TASK [network_configuration : Test sshd config before reloading] ***************
+ok: [rhel-lab00]
+
+TASK [network_configuration : Abort if sshd config test fails] *****************
+skipping: [rhel-lab00]
+
+PLAY [Preflight checks, enroll, and regen initramfs] ***************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Report skipping TPM2 role] ****************************************
+skipping: [rhel-lab00]
+
+TASK [tpm2 : Assert TPM2 support is explicitly enabled] ************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "TPM2 enrollment is enabled for rhel-lab00."
+}
+
+TASK [tpm2 : Assert the LUKS passphrase is available] **************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "LUKS passphrase is available for enrollment recovery."
+}
+
+TASK [tpm2 : Assert PCR configuration is defined] ******************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Validate PCR configuration syntax] ********************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "PCR specification 7 has valid syntax."
+}
+
+TASK [tpm2 : Validate PCR indexes] *********************************************
+ok: [rhel-lab00] => (item=7) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "changed_when_result": false,
+    "item": "7",
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Get the active root mount source] *********************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that root uses the supported device-mapper layout] *********
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "Root source /dev/mapper/rl-root uses /dev/mapper."
+}
+
+TASK [tpm2 : Discover the LUKS ancestor of the root mapper] ********************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Set the discovered LUKS device] ***********************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that a LUKS ancestor was discovered] ***********************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "Discovered LUKS device /dev/vda2."
+}
+
+TASK [tpm2 : Verify that the discovered device is a LUKS container] ************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that the TPM2 device is LUKS2] *****************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Parse LUKS2 metadata] *********************************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Verify LUKS2 format] **********************************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "/dev/vda2 is a LUKS2 container."
+}
+
+TASK [tpm2 : Collect passphrase-capable LUKS2 keyslots] ************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that a recovery passphrase keyslot exists] *****************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "Passphrase-capable LUKS2 keyslot(s) detected: 0, 1."
+}
+
+TASK [tpm2 : Get the LUKS UUID] ************************************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Set the discovered LUKS UUID] *************************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that the LUKS UUID was discovered] *************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "LUKS UUID <LUKS-UUID> discovered for /dev/vda2."
+}
+
+TASK [tpm2 : Check for an available TPM2 device] *******************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that a TPM2 device is available] ***************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "systemd-cryptenroll detected a TPM2 device."
+}
+
+TASK [tpm2 : Check crypttab for the root mapping] ******************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that the root mapping exists in crypttab] ******************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "Root mapping <LUKS-UUID> is present in /etc/crypttab."
+}
+
+TASK [tpm2 : Report missing link-volume-key when configured as a requirement] ***
+skipping: [rhel-lab00]
+
+TASK [tpm2 : Detect existing systemd TPM2 tokens] ******************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Set enrollment status] ********************************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert that a free LUKS2 keyslot exists for new enrollment] *******
+skipping: [rhel-lab00]
+
+TASK [tpm2 : Report existing TPM2 enrollment] **********************************
+ok: [rhel-lab00] => {
+    "msg": "A systemd TPM2 token already exists on /dev/vda2. The enrollment task should compare its PCR policy with tpm2_pcrs before deciding whether any change is required."
+}
+
+TASK [tpm2 : Flush handlers after preflight] ***********************************
+
+TASK [tpm2 : Assert TPM2 enrollment is enabled] ********************************
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Assert recovery-key enrollment is not enabled without secure key handling] ***
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Assert TPM PIN enrollment is not enabled for this noninteractive task] ***
+ok: [rhel-lab00] => {
+    "changed": false,
+    "changed_when_result": false,
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Build unique TPM2 enrollment target list] *************************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Assert enrollment targets are defined] ****************************
+ok: [rhel-lab00] => (item=/dev/vda2) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "changed_when_result": false,
+    "item": "/dev/vda2",
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Assert passphrase is available for new enrollment] ****************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Read LUKS2 metadata for every enrollment target] ******************
+ok: [rhel-lab00] => (item=/dev/vda2)
+
+TASK [tpm2 : Assert metadata was readable for every enrollment target] *********
+ok: [rhel-lab00] => (item=/dev/vda2) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "changed_when_result": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "changed_when_result": false,
+        "cmd": [
+            "cryptsetup",
+            "luksDump",
+            "--dump-json-metadata",
+            "/dev/vda2"
+        ],
+        "delta": "0:00:00.010554",
+        "end": "2026-10-27 02:59:47.665177",
+        "failed": false,
+        "failed_when_result": false,
+        "item": "/dev/vda2",
+        "msg": "",
+        "rc": 0,
+        "start": "2026-10-27 02:59:47.654623",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "{\n  \"keyslots\":{\n    \"0\":{\n      \"type\":\"luks2\",\n      \"key_size\":64,\n      \"af\":{\n        \"type\":\"luks1\",\n        \"stripes\":4000,\n        \"hash\":\"sha256\"\n      },\n      \"area\":{\n        \"type\":\"raw\",\n        \"offset\":\"32768\",\n        \"size\":\"258048\",\n        \"encryption\":\"aes-xts-plain64\",\n        \"key_size\":64\n      },\n      \"kdf\":{\n        \"type\":\"argon2id\",\n        \"time\":4,\n        \"memory\":659571,\n        \"cpus\":2,\n        \"salt\":\"<REDACTED>"\n      }\n    },\n    \"1\":{\n      \"type\":\"luks2\",\n      \"key_size\":64,\n      \"af\":{\n        \"type\":\"luks1\",\n        \"stripes\":4000,\n        \"hash\":\"sha512\"\n      },\n      \"area\":{\n        \"type\":\"raw\",\n        \"offset\":\"290816\",\n        \"size\":\"258048\",\n        \"encryption\":\"aes-xts-plain64\",\n        \"key_size\":64\n      },\n      \"kdf\":{\n        \"type\":\"pbkdf2\",\n        \"hash\":\"sha512\",\n        \"iterations\":1000,\n        \"salt\":\"<REDACTED>"\n      }\n    }\n  },\n  \"tokens\":{\n    \"0\":{\n      \"type\":\"systemd-tpm2\",\n      \"keyslots\":[\n        \"1\"\n      ],\n      \"tpm2-blob\":\"<REDACTED>",\n      \"tpm2-pcrs\":[\n        7\n      ],\n      \"tpm2-pcr-bank\":\"sha256\",\n      \"tpm2-policy-hash\":\"<REDACTED>",\n      \"tpm2-pin\":false,\n      \"tpm2_srk\":\"<REDACTED>"\n    }\n  },\n  \"segments\":{\n    \"0\":{\n      \"type\":\"crypt\",\n      \"offset\":\"16777216\",\n      \"size\":\"dynamic\",\n      \"iv_tweak\":\"0\",\n      \"encryption\":\"aes-xts-plain64\",\n      \"sector_size\":512\n    }\n  },\n  \"digests\":{\n    \"0\":{\n      \"type\":\"pbkdf2\",\n      \"keyslots\":[\n        \"0\",\n        \"1\"\n      ],\n      \"segments\":[\n        \"0\"\n      ],\n      \"hash\":\"sha256\",\n      \"iterations\":309862,\n      \"salt\":\"<REDACTED>",\n      \"digest\":\"<REDACTED>"\n    }\n  },\n  \"config\":{\n    \"json_size\":\"12288\",\n    \"keyslots_size\":\"16744448\",\n    \"flags\":[\n      \"allow-discards\"\n    ]\n  }\n}",
+        "stdout_lines": [
+            "{",
+            "  \"keyslots\":{",
+            "    \"0\":{",
+            "      \"type\":\"luks2\",",
+            "      \"key_size\":64,",
+            "      \"af\":{",
+            "        \"type\":\"luks1\",",
+            "        \"stripes\":4000,",
+            "        \"hash\":\"sha256\"",
+            "      },",
+            "      \"area\":{",
+            "        \"type\":\"raw\",",
+            "        \"offset\":\"32768\",",
+            "        \"size\":\"258048\",",
+            "        \"encryption\":\"aes-xts-plain64\",",
+            "        \"key_size\":64",
+            "      },",
+            "      \"kdf\":{",
+            "        \"type\":\"argon2id\",",
+            "        \"time\":4,",
+            "        \"memory\":659571,",
+            "        \"cpus\":2,",
+            "        \"salt\":\"<REDACTED>"",
+            "      }",
+            "    },",
+            "    \"1\":{",
+            "      \"type\":\"luks2\",",
+            "      \"key_size\":64,",
+            "      \"af\":{",
+            "        \"type\":\"luks1\",",
+            "        \"stripes\":4000,",
+            "        \"hash\":\"sha512\"",
+            "      },",
+            "      \"area\":{",
+            "        \"type\":\"raw\",",
+            "        \"offset\":\"290816\",",
+            "        \"size\":\"258048\",",
+            "        \"encryption\":\"aes-xts-plain64\",",
+            "        \"key_size\":64",
+            "      },",
+            "      \"kdf\":{",
+            "        \"type\":\"pbkdf2\",",
+            "        \"hash\":\"sha512\",",
+            "        \"iterations\":1000,",
+            "        \"salt\":\"<REDACTED>"",
+            "      }",
+            "    }",
+            "  },",
+            "  \"tokens\":{",
+            "    \"0\":{",
+            "      \"type\":\"systemd-tpm2\",",
+            "      \"keyslots\":[",
+            "        \"1\"",
+            "      ],",
+            "      \"tpm2-blob\":\"<REDACTED>",",
+            "      \"tpm2-pcrs\":[",
+            "        7",
+            "      ],",
+            "      \"tpm2-pcr-bank\":\"sha256\",",
+            "      \"tpm2-policy-hash\":\"<REDACTED>",",
+            "      \"tpm2-pin\":false,",
+            "      \"tpm2_srk\":\"<REDACTED>"",
+            "    }",
+            "  },",
+            "  \"segments\":{",
+            "    \"0\":{",
+            "      \"type\":\"crypt\",",
+            "      \"offset\":\"16777216\",",
+            "      \"size\":\"dynamic\",",
+            "      \"iv_tweak\":\"0\",",
+            "      \"encryption\":\"aes-xts-plain64\",",
+            "      \"sector_size\":512",
+            "    }",
+            "  },",
+            "  \"digests\":{",
+            "    \"0\":{",
+            "      \"type\":\"pbkdf2\",",
+            "      \"keyslots\":[",
+            "        \"0\",",
+            "        \"1\"",
+            "      ],",
+            "      \"segments\":[",
+            "        \"0\"",
+            "      ],",
+            "      \"hash\":\"sha256\",",
+            "      \"iterations\":309862,",
+            "      \"salt\":\"<REDACTED>",",
+            "      \"digest\":\"<REDACTED>"",
+            "    }",
+            "  },",
+            "  \"config\":{",
+            "    \"json_size\":\"12288\",",
+            "    \"keyslots_size\":\"16744448\",",
+            "    \"flags\":[",
+            "      \"allow-discards\"",
+            "    ]",
+            "  }",
+            "}"
+        ]
+    },
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Detect existing systemd TPM2 tokens for every target] *************
+ok: [rhel-lab00] => (item=/dev/vda2)
+
+TASK [tpm2 : Refuse to alter an already enrolled target] ***********************
+ok: [rhel-lab00] => (item=/dev/vda2) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "changed_when_result": false,
+    "item": {
+        "device": "/dev/vda2",
+        "pcrs": [
+            7
+        ],
+        "tokens": [
+            {
+                "key": "0",
+                "value": {
+                    "keyslots": [
+                        "1"
+                    ],
+                    "tpm2-blob": "<REDACTED>",
+                    "tpm2-pcr-bank": "sha256",
+                    "tpm2-pcrs": [
+                        7
+                    ],
+                    "tpm2-pin": false,
+                    "tpm2-policy-hash": "<REDACTED>",
+                    "tpm2_srk": "<REDACTED>",
+                    "type": "systemd-tpm2"
+                }
+            }
+        ]
+    },
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Build list of targets requiring enrollment] ***********************
+ok: [rhel-lab00]
+
+TASK [tpm2 : Report targets that are already enrolled] *************************
+ok: [rhel-lab00] => (item=/dev/vda2) => {
+    "msg": "/dev/vda2 is already enrolled with the requested systemd-tpm2 PCR policy (7); no enrollment required."
+}
+
+TASK [tpm2 : Assert a recovery passphrase keyslot exists on each new target] ***
+ok: [rhel-lab00] => (item=/dev/vda2) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "changed_when_result": false,
+    "item": "/dev/vda2",
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Assert a free LUKS2 keyslot exists on each new target] ************
+ok: [rhel-lab00] => (item=/dev/vda2) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "changed_when_result": false,
+    "item": "/dev/vda2",
+    "msg": "All assertions passed"
+}
+
+TASK [tpm2 : Enroll TPM2 token on each new LUKS2 target] ***********************
+[ERROR]: Task failed: Module failed: A 'failed_when' expression evaluated to 'True'.
+Origin: <repo>/ansible/roles/tpm2/tasks/enroll.yml:204:3
+
+202   check_mode: false
+203
+204 - name: Enroll TPM2 token on each new LUKS2 target
+      ^ column 3
+
+failed: [rhel-lab00] (item=(censored due to no_log)) => {"censored": "the output has been hidden due to the fact that 'no_log: true' was specified for this result", "changed": false}
+
+PLAY RECAP *********************************************************************
+rhel-lab00                 : ok=65   changed=0    unreachable=0    failed=1    skipped=9    rescued=0    ignored=0   
+
+
+--- EXIT STATUS: 2 ---
+Playbook result: FAIL

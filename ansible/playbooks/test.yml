@@ -1,3 +1,6 @@
+# This playbook is meant primarily for testing the automatic documentation script.
+# It will be deleted in the future.
+
 - name: Test Playbook
   hosts: servers
   gather_facts: true
